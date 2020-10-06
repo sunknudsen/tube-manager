@@ -349,8 +349,11 @@ const heading = function (value: string) {
   return `\n\n==============================\n${value.toUpperCase()}\n==============================`
 }
 
-const description = function (dataset: Dataset, platform: string, id: string) {
-  const video = dataset.videos[id]
+const description = function (
+  dataset: Dataset,
+  platform: string,
+  video: Video
+) {
   let content = video.description
   if (video.sections.length > 0) {
     content += heading(dataset.headings.sections)
@@ -368,7 +371,7 @@ const description = function (dataset: Dataset, platform: string, id: string) {
         const suggestedVideoId = suggestedVideo.split(".")[1]
         const suggestedVideoAttributes = dataset.videos[suggestedVideoId]
         if (!suggestedVideoAttributes) {
-          throw Error("Not found")
+          throw new Error("Not found")
         }
         if (platform === "youtube") {
           content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`
@@ -473,12 +476,11 @@ const description = function (dataset: Dataset, platform: string, id: string) {
 const preview = function (
   dataset: Dataset,
   platform: string,
-  id: string,
+  video: Video,
   metadata: boolean
 ) {
-  const video = dataset.videos[id]
   let content = `${chalk.bold(video.title)}`
-  content += `\n\n${description(dataset, platform, id)}`
+  content += `\n\n${description(dataset, platform, video)}`
   if (metadata) {
     content += `\n\n${chalk.bold("Tags:")} ${video.tags.join(", ")}`
   }
@@ -501,13 +503,26 @@ program
       }
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset = JSON.parse(json)
-      if (!dataset.videos[id]) {
+      let video
+      if (platform === "youtube") {
+        video = dataset.videos[id]
+      } else if (platform === "peertube") {
+        const videoIds = Object.keys(dataset.videos)
+        for (let index = 0; index < videoIds.length; index++) {
+          const _video = dataset.videos[videoIds[index]]
+          if (_video.peerTubeUuid === id) {
+            video = _video
+            break
+          }
+        }
+      }
+      if (!video) {
         throw new Error("Not found")
       }
       preview(
         dataset,
         platform,
-        id,
+        video,
         command.metadata ? command.metadata : false
       )
     } catch (error) {

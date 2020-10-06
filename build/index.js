@@ -41,6 +41,9 @@ commander_1.default
     .description("get refresh token")
     .action(async (platform) => {
     try {
+        if (!["youtube", "peertube"].includes(platform)) {
+            throw new Error("Invalid platform");
+        }
         if (platform === "youtube") {
             let refreshToken = await youtube_1.getRefreshToken();
             console.log(refreshToken);
@@ -48,9 +51,6 @@ commander_1.default
         else if (platform === "peertube") {
             let refreshToken = await peertube_1.getRefreshToken();
             console.log(refreshToken);
-        }
-        else {
-            console.error("Invalid platform");
         }
     }
     catch (error) {
@@ -62,6 +62,9 @@ commander_1.default
     .description("get stats")
     .action(async (platform) => {
     try {
+        if (!["youtube", "peertube"].includes(platform)) {
+            throw new Error("Invalid platform");
+        }
         if (platform === "youtube") {
             // See https://developers.google.com/youtube/v3/docs/channels/list
             const channelsResponse = await youtube_1.default.get("channels", {
@@ -96,9 +99,6 @@ commander_1.default
             });
             console.log(stats);
         }
-        else {
-            console.error("Invalid platform");
-        }
     }
     catch (error) {
         console.log(error);
@@ -109,6 +109,9 @@ commander_1.default
     .description("get video")
     .action(async (platform, id) => {
     try {
+        if (!["youtube", "peertube"].includes(platform)) {
+            throw new Error("Invalid platform");
+        }
         if (platform === "youtube") {
             // See https://developers.google.com/youtube/v3/docs/videos/list
             const videosResponse = await youtube_1.default.get("videos", {
@@ -123,9 +126,6 @@ commander_1.default
             // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
             const videosResponse = await peertube_1.default.get(`videos/${id}`);
             console.log(videosResponse.body);
-        }
-        else {
-            throw new Error("Invalid platform");
         }
     }
     catch (error) {
@@ -238,10 +238,16 @@ commander_1.default
             return uuid;
         };
         let json = {
-            lineBreak: "\n\n",
+            headings: {
+                sections: "Sections",
+                suggestedVideos: "Suggested",
+                links: "Links",
+                credits: "Credits",
+                affiliateLinks: "Credits",
+                footnotes: "Footnotes",
+            },
             separator: "👉",
-            affiliateDisclaimer: "",
-            affiliate: {
+            affiliateLinks: {
                 amazon: {},
             },
             videos: {},
@@ -258,11 +264,12 @@ commander_1.default
                 title: youtubeVideo.snippet.title,
                 description: youtubeVideo.snippet.description,
                 tags: youtubeVideo.snippet.tags,
-                timestamps: [],
-                videos: [],
+                sections: [],
+                suggestedVideos: [],
                 links: [],
                 credits: [],
-                affiliate: [],
+                affiliateLinks: [],
+                footnotes: [],
             };
         });
         await writeFileAsync(command.dataset, JSON.stringify(json, null, 2));
@@ -272,23 +279,174 @@ commander_1.default
         console.log(error);
     }
 });
-const preview = async function (video) {
-    console.log(`${chalk_1.default.bold(video.title)}\n`);
-    console.log(video.description);
+const heading = function (value) {
+    return `\n\n==============================\n${value.toUpperCase()}\n==============================`;
+};
+const description = function (dataset, platform, video) {
+    let content = video.description;
+    if (video.sections.length > 0) {
+        content += heading(dataset.headings.sections);
+        video.sections.forEach(function (section) {
+            content += `\n${section.timestamp} ${section.label}`;
+        });
+    }
+    if (video.suggestedVideos.length > 0) {
+        content += heading(dataset.headings.suggestedVideos);
+        video.suggestedVideos.forEach(function (suggestedVideo) {
+            if (typeof suggestedVideo === "string" &&
+                suggestedVideo.match(/^video\.[a-zA-Z0-9_\-]{11}/)) {
+                const suggestedVideoId = suggestedVideo.split(".")[1];
+                const suggestedVideoAttributes = dataset.videos[suggestedVideoId];
+                if (!suggestedVideoAttributes) {
+                    throw new Error("Not found");
+                }
+                if (platform === "youtube") {
+                    content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`;
+                }
+                else if (platform === "peertube") {
+                    content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.peerTubeUuid}`;
+                }
+            }
+            else if (typeof suggestedVideo === "string") {
+                content += `\n${suggestedVideo}`;
+            }
+            else {
+                content += `\n${suggestedVideo.label} ${dataset.separator} ${suggestedVideo.url}`;
+            }
+        });
+    }
+    if (video.links.length > 0) {
+        content += heading(dataset.headings.links);
+        video.links.forEach(function (link) {
+            if (typeof link === "string") {
+                content += `\n${link}`;
+            }
+            else {
+                content += `\n${link.label} ${dataset.separator} ${link.url}`;
+            }
+        });
+    }
+    if (video.credits.length > 0) {
+        content += heading(dataset.headings.credits);
+        video.credits.forEach(function (credit) {
+            if (typeof credit === "string") {
+                content += `\n${credit}`;
+            }
+            else {
+                content += `\n${credit.label} ${dataset.separator} ${credit.url}`;
+            }
+        });
+    }
+    if (video.affiliateLinks.length > 0) {
+        content += heading(dataset.headings.affiliateLinks);
+        let count = 0;
+        video.affiliateLinks.forEach(function (affiliateLink) {
+            if (typeof affiliateLink === "string" &&
+                affiliateLink.match(/^(\w+?)\.(\w+?)$/)) {
+                const affiliateLinkMatch = affiliateLink.match(/^(\w+?)\.(\w+?)$/);
+                const affiliateLinkAttributes = dataset.affiliateLinks[affiliateLinkMatch[1]][affiliateLinkMatch[2]];
+                if (!affiliateLinkAttributes) {
+                    throw Error("Not found");
+                }
+                if (typeof affiliateLinkAttributes === "string") {
+                    content += `\n${affiliateLinkAttributes}`;
+                }
+                else if (affiliateLinkAttributes.url instanceof Array) {
+                    if (count !== 0) {
+                        content += "\n";
+                    }
+                    content += `\n${affiliateLinkAttributes.label}`;
+                    affiliateLinkAttributes.url.forEach(function (_url) {
+                        if (typeof _url === "string") {
+                            content += `\n${_url}`;
+                        }
+                        else {
+                            content += `\n${_url.label} ${dataset.separator} ${_url.url}`;
+                        }
+                    });
+                }
+                else {
+                    content += `\n${affiliateLinkAttributes.label} ${dataset.separator} ${affiliateLinkAttributes.url}`;
+                }
+            }
+            else if (typeof affiliateLink === "string") {
+                content += `\n${affiliateLink}`;
+            }
+            else if (affiliateLink.url instanceof Array) {
+                if (count !== 0) {
+                    content += "\n";
+                }
+                content += `\n${affiliateLink.label}`;
+                affiliateLink.url.forEach(function (_url) {
+                    if (typeof _url === "string") {
+                        content += `\n${_url}`;
+                    }
+                    else {
+                        content += `\n${_url.label} ${dataset.separator} ${_url.url}`;
+                    }
+                });
+            }
+            else {
+                content += `\n${affiliateLink.label} ${dataset.separator} ${affiliateLink.url}`;
+            }
+            count++;
+        });
+    }
+    if (video.footnotes.length > 0) {
+        content += heading(dataset.headings.footnotes);
+        video.footnotes.forEach(function (footnote) {
+            let emoji = "";
+            if (footnote.type === "warning") {
+                emoji = "⚠️ ";
+            }
+            if (footnote.timestamp === "") {
+                content += `\n${emoji}${footnote.message}`;
+            }
+            else {
+                content += `\n${emoji}${footnote.timestamp} ${footnote.message}`;
+            }
+        });
+    }
+    return content;
+};
+const preview = function (dataset, platform, video, metadata) {
+    let content = `${chalk_1.default.bold(video.title)}`;
+    content += `\n\n${description(dataset, platform, video)}`;
+    if (metadata) {
+        content += `\n\n${chalk_1.default.bold("Tags:")} ${video.tags.join(", ")}`;
+    }
+    console.log(content);
 };
 commander_1.default
-    .command("preview <id>")
+    .command("preview <platform> <id>")
     .description("preview video description")
     .option("--dataset <dataset>", "/path/to/tube-manager.json", path_1.default.resolve(process.cwd(), "tube-manager.json"))
-    .action(async (id, command) => {
+    .option("--metadata", "enabled metadata preview")
+    .action(async (platform, id, command) => {
     try {
+        if (!["youtube", "peertube"].includes(platform)) {
+            throw new Error("Invalid platform");
+        }
         const json = await readFileAsync(command.dataset, "utf8");
         const dataset = JSON.parse(json);
-        const video = dataset.videos[id];
+        let video;
+        if (platform === "youtube") {
+            video = dataset.videos[id];
+        }
+        else if (platform === "peertube") {
+            const videoIds = Object.keys(dataset.videos);
+            for (let index = 0; index < videoIds.length; index++) {
+                const _video = dataset.videos[videoIds[index]];
+                if (_video.peerTubeUuid === id) {
+                    video = _video;
+                    break;
+                }
+            }
+        }
         if (!video) {
             throw new Error("Not found");
         }
-        await preview(video);
+        preview(dataset, platform, video, command.metadata ? command.metadata : false);
     }
     catch (error) {
         console.log(error);
