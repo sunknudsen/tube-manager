@@ -1,0 +1,13 @@
+# Folder view configuration files
+.DS_Store
+
+# Editor files
+*.code-workspace
+
+# Node files
+/node_modules
+npm-debug.log
+
+# Project files
+.env
+tube-manager.json

@@ -1,0 +1,57 @@
+{
+  "name": "tube-manager",
+  "version": "0.0.1",
+  "description": "Manage YouTube (and syndicated PeerTube) videos using command line",
+  "engines": {
+    "node": ">=10.17.0"
+  },
+  "bin": {
+    "tube-manager": "./bin/tube-manager.js"
+  },
+  "main": "build/index.js",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^6.1.0",
+    "dotenv": "^8.2.0",
+    "got": "^11.7.0",
+    "inquirer": "^7.3.3",
+    "leven": "^3.1.0",
+    "open": "^7.3.0",
+    "p-whilst": "^2.1.0",
+    "query-string": "^6.13.5"
+  },
+  "scripts": {
+    "start": "node build/index.js",
+    "code": "tsc -w",
+    "build": "rm -fr build/*; tsc",
+    "ncu": "ncu -u"
+  },
+  "author": "Sun Knudsen <hello@sunknudsen.com>",
+  "license": "MIT",
+  "keywords": [
+    "cli",
+    "youtube",
+    "peertube"
+  ],
+  "devDependencies": {
+    "@types/inquirer": "^7.3.1",
+    "@types/node": "^14.11.2",
+    "npm-check-updates": "^9.0.3",
+    "typescript": "^4.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunknudsen/tube-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sunknudsen/tube-manager/issues"
+  },
+  "homepage": "https://github.com/sunknudsen/tube-manager#readme",
+  "prettier": {
+    "endOfLine": "lf",
+    "printWidth": 80,
+    "semi": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  }
+}
