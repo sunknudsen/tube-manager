@@ -58,6 +58,50 @@ commander_1.default
     }
 });
 commander_1.default
+    .command("channels <platform>")
+    .description("get channels")
+    .action(async (platform) => {
+    try {
+        if (!["youtube", "peertube"].includes(platform)) {
+            throw new Error("Invalid platform");
+        }
+        if (platform === "youtube") {
+            // See https://developers.google.com/youtube/v3/docs/channels/list
+            const channelsResponse = await youtube_1.default.get("channels", {
+                searchParams: {
+                    part: "id,snippet",
+                    mine: true,
+                },
+            });
+            let channels = [];
+            channelsResponse.body.items.forEach(function (item) {
+                channels.push({
+                    id: item.id,
+                    title: item.snippet.title,
+                    description: item.snippet.description,
+                });
+            });
+            console.log(channels);
+        }
+        else if (platform === "peertube") {
+            // See https://docs.joinpeertube.org/api-rest-reference.html#tag/My-User/paths/~1users~1me/get
+            const meResponse = await peertube_1.default.get(`users/me`);
+            let channels = [];
+            meResponse.body.videoChannels.forEach(function (videoChannel) {
+                channels.push({
+                    id: videoChannel.id,
+                    name: videoChannel.name,
+                    description: videoChannel.description,
+                });
+            });
+            console.log(channels);
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+commander_1.default
     .command("stats <platform>")
     .description("get stats")
     .action(async (platform) => {
@@ -419,7 +463,7 @@ const preview = function (dataset, platform, video, metadata) {
 };
 commander_1.default
     .command("preview <platform> <id>")
-    .description("preview video description")
+    .description("preview video")
     .option("--dataset <dataset>", "/path/to/tube-manager.json", path_1.default.resolve(process.cwd(), "tube-manager.json"))
     .option("--metadata", "enabled metadata preview")
     .action(async (platform, id, command) => {
@@ -447,6 +491,29 @@ commander_1.default
             throw new Error("Not found");
         }
         preview(dataset, platform, video, command.metadata ? command.metadata : false);
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+commander_1.default
+    .command("publish [id]")
+    .description("publish video(s)")
+    .option("--dataset <dataset>", "/path/to/tube-manager.json", path_1.default.resolve(process.cwd(), "tube-manager.json"))
+    .action(async (id, command) => {
+    try {
+        const json = await readFileAsync(command.dataset, "utf8");
+        const dataset = JSON.parse(json);
+        if (!id) {
+            console.log("full");
+        }
+        else {
+            const video = dataset.videos[id];
+            if (!video) {
+                throw new Error("Not found");
+            }
+            console.log("partial");
+        }
     }
     catch (error) {
         console.log(error);

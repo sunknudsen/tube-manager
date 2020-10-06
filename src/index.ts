@@ -14,7 +14,6 @@ import { existsSync, readFile, writeFile } from "fs"
 import inquirer from "inquirer"
 import leven from "leven"
 import { promisify, inspect } from "util"
-import got from "got"
 import chalk from "chalk"
 
 dotenv.config()
@@ -36,6 +35,49 @@ program
       } else if (platform === "peertube") {
         let refreshToken = await getPeerTubeRefreshToken()
         console.log(refreshToken)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+program
+  .command("channels <platform>")
+  .description("get channels")
+  .action(async (platform) => {
+    try {
+      if (!["youtube", "peertube"].includes(platform)) {
+        throw new Error("Invalid platform")
+      }
+      if (platform === "youtube") {
+        // See https://developers.google.com/youtube/v3/docs/channels/list
+        const channelsResponse: any = await youtubeClient.get("channels", {
+          searchParams: {
+            part: "id,snippet",
+            mine: true,
+          },
+        })
+        let channels: any[] = []
+        channelsResponse.body.items.forEach(function (item: any) {
+          channels.push({
+            id: item.id,
+            title: item.snippet.title,
+            description: item.snippet.description,
+          })
+        })
+        console.log(channels)
+      } else if (platform === "peertube") {
+        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/My-User/paths/~1users~1me/get
+        const meResponse: any = await peertubeClient.get(`users/me`)
+        let channels: any[] = []
+        meResponse.body.videoChannels.forEach(function (videoChannel: any) {
+          channels.push({
+            id: videoChannel.id,
+            name: videoChannel.name,
+            description: videoChannel.description,
+          })
+        })
+        console.log(channels)
       }
     } catch (error) {
       console.log(error)
@@ -489,7 +531,7 @@ const preview = function (
 
 program
   .command("preview <platform> <id>")
-  .description("preview video description")
+  .description("preview video")
   .option(
     "--dataset <dataset>",
     "/path/to/tube-manager.json",
