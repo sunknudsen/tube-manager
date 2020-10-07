@@ -27,7 +27,7 @@ program
   .action(async (platform) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
-        throw new Error("Invalid platform")
+        throw new Error(`Invalid platform "${platform}"`)
       }
       if (platform === "youtube") {
         let refreshToken = await getYouTubeRefreshToken()
@@ -47,7 +47,7 @@ program
   .action(async (platform) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
-        throw new Error("Invalid platform")
+        throw new Error(`Invalid platform "${platform}"`)
       }
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/channels/list
@@ -90,7 +90,7 @@ program
   .action(async (platform) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
-        throw new Error("Invalid platform")
+        throw new Error(`Invalid platform "${platform}"`)
       }
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/channels/list
@@ -101,7 +101,9 @@ program
           },
         })
         if (channelsResponse.body.items.length !== 1) {
-          throw new Error("Could not find channel")
+          throw new Error(
+            `Could not find YouTube channel "${process.env.YOUTUBE_CHANNEL_ID}"`
+          )
         }
         const statistics = channelsResponse.body.items[0].statistics
         console.log({
@@ -136,7 +138,7 @@ program
   .action(async (platform, id) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
-        throw new Error("Invalid platform")
+        throw new Error(`Invalid platform "${platform}"`)
       }
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/videos/list
@@ -192,7 +194,9 @@ program
           },
         })
         if (channelsResponse.body.items.length !== 1) {
-          throw new Error("Could not find channel")
+          throw new Error(
+            `Could not find YouTube channel "${process.env.YOUTUBE_CHANNEL_ID}"`
+          )
         }
         const playlistId =
           channelsResponse.body.items[0].contentDetails.relatedPlaylists.uploads
@@ -292,16 +296,16 @@ program
         affiliateLinks: {
           amazon: {},
         },
-        videos: {},
+        videos: [],
       }
       youtubeVideos.forEach(function (youtubeVideo) {
         let peertubeUuid = getPeerTubeUuid(youtubeVideo.snippet.title)
         if (peertubeVideos.length > 0 && !peertubeUuid) {
           console.log(
-            `Could not find PeerTube video matching "${youtubeVideo.snippet.title}"`
+            `Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`
           )
         }
-        json.videos[youtubeVideo.id] = {
+        json.videos.push({
           id: youtubeVideo.id,
           peerTubeUuid: peertubeUuid ? peertubeUuid : null,
           publishedAt: youtubeVideo.snippet.publishedAt,
@@ -314,14 +318,10 @@ program
           credits: [],
           affiliateLinks: [],
           footnotes: [],
-        }
+        })
       })
       await writeFileAsync(command.dataset, JSON.stringify(json, null, 2))
-      console.log(
-        `Imported ${Object.keys(json.videos).length} videos to ${
-          command.dataset
-        }`
-      )
+      console.log(`Imported ${json.videos.length} videos to ${command.dataset}`)
     } catch (error) {
       console.log(error)
     }
@@ -382,8 +382,22 @@ interface Dataset {
       [key: string]: AffiliateSnippet
     }
   }
-  videos: {
-    [key: string]: Video
+  videos: Video[]
+}
+
+const getYouTubeVideo = function (dataset: Dataset, id: string): Video {
+  for (const video of dataset.videos) {
+    if (video.id === id) {
+      return video
+    }
+  }
+}
+
+const getPeerTubeVideo = function (dataset: Dataset, id: string): Video {
+  for (const video of dataset.videos) {
+    if (video.peerTubeUuid === id) {
+      return video
+    }
   }
 }
 
@@ -411,9 +425,12 @@ const description = function (
         suggestedVideo.match(/^video\.[a-zA-Z0-9_\-]{11}/)
       ) {
         const suggestedVideoId = suggestedVideo.split(".")[1]
-        const suggestedVideoAttributes = dataset.videos[suggestedVideoId]
+        const suggestedVideoAttributes = getYouTubeVideo(
+          dataset,
+          suggestedVideoId
+        )
         if (!suggestedVideoAttributes) {
-          throw new Error("Not found")
+          throw new Error(`Could not find suggested video "${suggestedVideo}"`)
         }
         if (platform === "youtube") {
           content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`
@@ -541,25 +558,18 @@ program
   .action(async (platform, id, command) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
-        throw new Error("Invalid platform")
+        throw new Error(`Invalid platform "${platform}"`)
       }
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset = JSON.parse(json)
       let video
       if (platform === "youtube") {
-        video = dataset.videos[id]
+        video = getYouTubeVideo(dataset, id)
       } else if (platform === "peertube") {
-        const videoIds = Object.keys(dataset.videos)
-        for (let index = 0; index < videoIds.length; index++) {
-          const _video = dataset.videos[videoIds[index]]
-          if (_video.peerTubeUuid === id) {
-            video = _video
-            break
-          }
-        }
+        video = getPeerTubeVideo(dataset, id)
       }
       if (!video) {
-        throw new Error("Not found")
+        throw new Error("Could not find video")
       }
       preview(
         dataset,
