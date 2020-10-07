@@ -34,6 +34,7 @@ const leven_1 = __importDefault(require("leven"));
 const util_1 = require("util");
 const chalk_1 = __importDefault(require("chalk"));
 const prettier_1 = __importDefault(require("prettier"));
+const form_data_1 = __importDefault(require("form-data"));
 dotenv_1.default.config();
 const readFileAsync = util_1.promisify(fs_1.readFile);
 const writeFileAsync = util_1.promisify(fs_1.writeFile);
@@ -308,7 +309,7 @@ commander_1.default
             if (process.env.PEERTUBE_ACCOUNT_NAME) {
                 peerTubeVideo = getPeerTubeVideoMatchingTitle(peertubeVideos, youtubeVideo.snippet.title);
                 if (!peerTubeVideo) {
-                    console.log(`Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`);
+                    console.log(chalk_1.default.red(`Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`));
                 }
             }
             dataset.videos.push({
@@ -318,6 +319,7 @@ commander_1.default
                 title: youtubeVideo.snippet.title,
                 description: youtubeVideo.snippet.description,
                 tags: youtubeVideo.snippet.tags,
+                categoryId: youtubeVideo.snippet.categoryId,
                 sections: [],
                 suggestedVideos: [],
                 links: [],
@@ -360,7 +362,7 @@ commander_1.default
             const peertubeVideos = await getPeerTubeVideosFromServer();
             peerTubeVideo = getPeerTubeVideoMatchingTitle(peertubeVideos, video.snippet.title);
             if (!peerTubeVideo) {
-                console.log(`Could not find PeerTube video matching title "${video.snippet.title}"`);
+                console.log(chalk_1.default.red(`Could not find PeerTube video matching title "${video.snippet.title}"`));
             }
         }
         dataset.videos.push({
@@ -370,6 +372,7 @@ commander_1.default
             title: video.snippet.title,
             description: video.snippet.description,
             tags: video.snippet.tags,
+            categoryId: video.snippet.categoryId,
             sections: [],
             suggestedVideos: [],
             links: [],
@@ -434,7 +437,15 @@ const description = function (dataset, platform, video) {
                     content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`;
                 }
                 else if (platform === "peertube") {
-                    content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.peerTubeUuid}`;
+                    let watchUrl;
+                    if (suggestedVideoAttributes.peerTubeUuid === null) {
+                        console.log(chalk_1.default.red(`Could not find PeerTube version of suggested video "${suggestedVideo}", using YouTube version instead`));
+                        watchUrl = `${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`;
+                    }
+                    else {
+                        watchUrl = `${process.env.PEERTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.peerTubeUuid}`;
+                    }
+                    content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${watchUrl}`;
                 }
             }
             else if (typeof suggestedVideo === "string") {
@@ -575,6 +586,43 @@ commander_1.default
         console.log(error);
     }
 });
+const publishVideo = async function (dataset, video) {
+    try {
+        // See https://developers.google.com/youtube/v3/docs/videos/update
+        await youtube_1.default.put("videos", {
+            // See https://developers.google.com/youtube/v3/docs/channels/list
+            searchParams: {
+                part: "snippet",
+            },
+            json: {
+                id: video.id,
+                snippet: {
+                    title: video.title,
+                    description: description(dataset, "youtube", video),
+                    tags: video.tags,
+                    categoryId: video.categoryId,
+                },
+            },
+        });
+        console.log(`Published video to ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${video.id}`);
+        if (video.peerTubeUuid !== null) {
+            let form = new form_data_1.default();
+            form.append("name", video.title);
+            form.append("description", description(dataset, "peertube", video));
+            video.tags.slice(0, 4).forEach(function (tag, index) {
+                form.append(`tags[${index}]`, tag);
+            });
+            // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
+            const videosResponse = await peertube_1.default.put(`videos/${video.peerTubeUuid}`, {
+                body: form,
+            });
+            console.log(`Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`);
+        }
+    }
+    catch (error) {
+        throw error;
+    }
+};
 commander_1.default
     .command("publish [id]")
     .description("publish video(s)")
@@ -592,21 +640,43 @@ commander_1.default
             if (values.confirmation !== true) {
                 process.exit(0);
             }
-            dataset.videos.forEach(function (video) {
-                console.log(video);
-                description(dataset, "youtube", video);
-                description(dataset, "peertube", video);
-            });
+            console.log("Publishing all videos...");
+            for (const video of dataset.videos) {
+                await publishVideo(dataset, video);
+            }
+            console.log("Done");
         }
         else {
-            const video = dataset.videos[id];
+            const video = getYouTubeVideo(dataset, id);
             if (!video) {
                 throw new Error("Could not find video");
             }
-            console.log("partial");
+            await publishVideo(dataset, video);
+            // Find suggested videos that reference video
+            let suggestedVideoIds = [];
+            dataset.videos.forEach(function (video) {
+                video.suggestedVideos.forEach(function (suggestedVideo) {
+                    if (typeof suggestedVideo === "string" &&
+                        suggestedVideo.match(id)) {
+                        suggestedVideoIds.push(video.id);
+                    }
+                });
+            });
+            if (suggestedVideoIds.length > 0) {
+                console.log("Publishing suggested videos that reference video...");
+                for (const suggestedVideoId of suggestedVideoIds) {
+                    const video = getYouTubeVideo(dataset, suggestedVideoId);
+                    if (!video) {
+                        throw new Error("Could not find video");
+                    }
+                    await publishVideo(dataset, video);
+                }
+            }
+            console.log("Done");
         }
     }
     catch (error) {
+        console.log(util_1.inspect(error.response.body, false, 3, true));
         console.log(error);
     }
 });

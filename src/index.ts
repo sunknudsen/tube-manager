@@ -16,11 +16,71 @@ import leven from "leven"
 import { promisify, inspect } from "util"
 import chalk from "chalk"
 import prettier from "prettier"
+import formData from "form-data"
 
 dotenv.config()
 
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
+
+type Section = {
+  label: string
+  timestamp: number
+}
+
+type Snippet =
+  | string
+  | {
+      label: string
+      url: string
+    }
+
+type AffiliateSnippet =
+  | Snippet
+  | {
+      label: string
+      url: Snippet[]
+    }
+
+type Footnote = {
+  type: "" | "warning"
+  timestamp: string
+  message: string
+}
+
+interface Video {
+  id: string
+  peerTubeUuid: string
+  publishedAt: string
+  title: string
+  description: string
+  tags: string[]
+  categoryId: string
+  sections: Section[]
+  suggestedVideos: Snippet[]
+  links: Snippet[]
+  credits: Snippet[]
+  affiliateLinks: AffiliateSnippet[]
+  footnotes: Footnote[]
+}
+
+interface Dataset {
+  headings: {
+    sections: string
+    suggestedVideos: string
+    links: string
+    credits: string
+    affiliateLinks: string
+    footnotes: string
+  }
+  separator: string
+  affiliateLinks: {
+    [key: string]: {
+      [key: string]: AffiliateSnippet
+    }
+  }
+  videos: Video[]
+}
 
 program
   .command("refresh-token <platform>")
@@ -317,7 +377,9 @@ program
           )
           if (!peerTubeVideo) {
             console.log(
-              `Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`
+              chalk.red(
+                `Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`
+              )
             )
           }
         }
@@ -328,6 +390,7 @@ program
           title: youtubeVideo.snippet.title,
           description: youtubeVideo.snippet.description,
           tags: youtubeVideo.snippet.tags,
+          categoryId: youtubeVideo.snippet.categoryId,
           sections: [],
           suggestedVideos: [],
           links: [],
@@ -383,7 +446,9 @@ program
         )
         if (!peerTubeVideo) {
           console.log(
-            `Could not find PeerTube video matching title "${video.snippet.title}"`
+            chalk.red(
+              `Could not find PeerTube video matching title "${video.snippet.title}"`
+            )
           )
         }
       }
@@ -394,6 +459,7 @@ program
         title: video.snippet.title,
         description: video.snippet.description,
         tags: video.snippet.tags,
+        categoryId: video.snippet.categoryId,
         sections: [],
         suggestedVideos: [],
         links: [],
@@ -421,64 +487,6 @@ program
       console.log(error)
     }
   })
-
-type Section = {
-  label: string
-  timestamp: number
-}
-
-type Snippet =
-  | string
-  | {
-      label: string
-      url: string
-    }
-
-type AffiliateSnippet =
-  | Snippet
-  | {
-      label: string
-      url: Snippet[]
-    }
-
-type Footnote = {
-  type: "" | "warning"
-  timestamp: string
-  message: string
-}
-
-interface Video {
-  id: string
-  peerTubeUuid: string
-  publishedAt: string
-  title: string
-  description: string
-  tags: string[]
-  sections: Section[]
-  suggestedVideos: Snippet[]
-  links: Snippet[]
-  credits: Snippet[]
-  affiliateLinks: AffiliateSnippet[]
-  footnotes: Footnote[]
-}
-
-interface Dataset {
-  headings: {
-    sections: string
-    suggestedVideos: string
-    links: string
-    credits: string
-    affiliateLinks: string
-    footnotes: string
-  }
-  separator: string
-  affiliateLinks: {
-    [key: string]: {
-      [key: string]: AffiliateSnippet
-    }
-  }
-  videos: Video[]
-}
 
 const getYouTubeVideo = function (dataset: Dataset, id: string): Video {
   for (const video of dataset.videos) {
@@ -530,7 +538,18 @@ const description = function (
         if (platform === "youtube") {
           content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`
         } else if (platform === "peertube") {
-          content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.peerTubeUuid}`
+          let watchUrl: string
+          if (suggestedVideoAttributes.peerTubeUuid === null) {
+            console.log(
+              chalk.red(
+                `Could not find PeerTube version of suggested video "${suggestedVideo}", using YouTube version instead`
+              )
+            )
+            watchUrl = `${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`
+          } else {
+            watchUrl = `${process.env.PEERTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.peerTubeUuid}`
+          }
+          content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${watchUrl}`
         }
       } else if (typeof suggestedVideo === "string") {
         content += `\n${suggestedVideo}`
@@ -673,6 +692,112 @@ program
         command.metadata ? command.metadata : false
       )
     } catch (error) {
+      console.log(error)
+    }
+  })
+
+const publishVideo = async function (dataset: Dataset, video: Video) {
+  try {
+    // See https://developers.google.com/youtube/v3/docs/videos/update
+    await youtubeClient.put("videos", {
+      // See https://developers.google.com/youtube/v3/docs/channels/list
+      searchParams: {
+        part: "snippet",
+      },
+      json: {
+        id: video.id,
+        snippet: {
+          title: video.title,
+          description: description(dataset, "youtube", video),
+          tags: video.tags,
+          categoryId: video.categoryId,
+        },
+      },
+    })
+    console.log(
+      `Published video to ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${video.id}`
+    )
+    if (video.peerTubeUuid !== null) {
+      let form = new formData()
+      form.append("name", video.title)
+      form.append("description", description(dataset, "peertube", video))
+      video.tags.slice(0, 4).forEach(function (tag, index) {
+        form.append(`tags[${index}]`, tag)
+      })
+      // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
+      const videosResponse: any = await peertubeClient.put(
+        `videos/${video.peerTubeUuid}`,
+        {
+          body: form,
+        }
+      )
+      console.log(
+        `Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`
+      )
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+program
+  .command("publish [id]")
+  .description("publish video(s)")
+  .option(
+    "--dataset <dataset>",
+    "/path/to/tube-manager.json",
+    path.resolve(process.cwd(), "tube-manager.json")
+  )
+  .action(async (id, command) => {
+    try {
+      const json = await readFileAsync(command.dataset, "utf8")
+      const dataset: Dataset = JSON.parse(json)
+      if (!id) {
+        const values = await inquirer.prompt({
+          type: "confirm",
+          name: "confirmation",
+          message: `Are you sure you wish to publish all videos?`,
+        })
+        if (values.confirmation !== true) {
+          process.exit(0)
+        }
+        console.log("Publishing all videos...")
+        for (const video of dataset.videos) {
+          await publishVideo(dataset, video)
+        }
+        console.log("Done")
+      } else {
+        const video = getYouTubeVideo(dataset, id)
+        if (!video) {
+          throw new Error("Could not find video")
+        }
+        await publishVideo(dataset, video)
+        // Find suggested videos that reference video
+        let suggestedVideoIds: string[] = []
+        dataset.videos.forEach(function (video) {
+          video.suggestedVideos.forEach(function (suggestedVideo) {
+            if (
+              typeof suggestedVideo === "string" &&
+              suggestedVideo.match(id)
+            ) {
+              suggestedVideoIds.push(video.id)
+            }
+          })
+        })
+        if (suggestedVideoIds.length > 0) {
+          console.log("Publishing suggested videos that reference video...")
+          for (const suggestedVideoId of suggestedVideoIds) {
+            const video = getYouTubeVideo(dataset, suggestedVideoId)
+            if (!video) {
+              throw new Error("Could not find video")
+            }
+            await publishVideo(dataset, video)
+          }
+        }
+        console.log("Done")
+      }
+    } catch (error) {
+      console.log(inspect(error.response.body, false, 3, true))
       console.log(error)
     }
   })
