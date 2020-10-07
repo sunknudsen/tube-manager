@@ -696,7 +696,6 @@ commander_1.default
         console.log("Done");
     }
     catch (error) {
-        console.log(util_1.inspect(error.response.body, false, 3, true));
         console.log(error);
     }
 });

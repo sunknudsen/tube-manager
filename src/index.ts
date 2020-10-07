@@ -829,7 +829,6 @@ program
       )
       console.log("Done")
     } catch (error) {
-      console.log(inspect(error.response.body, false, 3, true))
       console.log(error)
     }
   })
