@@ -734,6 +734,35 @@ const publishVideo = async function (dataset: Dataset, video: Video) {
       console.log(
         `Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`
       )
+    } else if (
+      video.peerTubeUuid === null &&
+      process.env.PEERTUBE_ACCOUNT_NAME
+    ) {
+      const values = await inquirer.prompt({
+        type: "confirm",
+        name: "confirmation",
+        message: `Do you wish to publish video to PeerTube?`,
+      })
+      if (values.confirmation === true) {
+        let form = new formData()
+        form.append("channelId", process.env.PEERTUBE_CHANNEL_ID)
+        form.append("name", video.title)
+        form.append(
+          "targetUrl",
+          `${process.env.YOUTUBE_CHANNEL_WATCH_URL}${video.id}`
+        )
+        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
+        const videosResponse: any = await peertubeClient.post(
+          `videos/imports`,
+          {
+            body: form,
+          }
+        )
+        video.peerTubeUuid = videosResponse.body.video.uuid
+        console.log(
+          `Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`
+        )
+      }
     }
   } catch (error) {
     throw error
@@ -765,7 +794,6 @@ program
         for (const video of dataset.videos) {
           await publishVideo(dataset, video)
         }
-        console.log("Done")
       } else {
         const video = getYouTubeVideo(dataset, id)
         if (!video) {
@@ -794,8 +822,12 @@ program
             await publishVideo(dataset, video)
           }
         }
-        console.log("Done")
       }
+      await writeFileAsync(
+        command.dataset,
+        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
+      )
+      console.log("Done")
     } catch (error) {
       console.log(inspect(error.response.body, false, 3, true))
       console.log(error)

@@ -618,6 +618,26 @@ const publishVideo = async function (dataset, video) {
             });
             console.log(`Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`);
         }
+        else if (video.peerTubeUuid === null &&
+            process.env.PEERTUBE_ACCOUNT_NAME) {
+            const values = await inquirer_1.default.prompt({
+                type: "confirm",
+                name: "confirmation",
+                message: `Do you wish to publish video to PeerTube?`,
+            });
+            if (values.confirmation === true) {
+                let form = new form_data_1.default();
+                form.append("channelId", process.env.PEERTUBE_CHANNEL_ID);
+                form.append("name", video.title);
+                form.append("targetUrl", `${process.env.YOUTUBE_CHANNEL_WATCH_URL}${video.id}`);
+                // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
+                const videosResponse = await peertube_1.default.post(`videos/imports`, {
+                    body: form,
+                });
+                video.peerTubeUuid = videosResponse.body.video.uuid;
+                console.log(`Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`);
+            }
+        }
     }
     catch (error) {
         throw error;
@@ -644,7 +664,6 @@ commander_1.default
             for (const video of dataset.videos) {
                 await publishVideo(dataset, video);
             }
-            console.log("Done");
         }
         else {
             const video = getYouTubeVideo(dataset, id);
@@ -672,8 +691,9 @@ commander_1.default
                     await publishVideo(dataset, video);
                 }
             }
-            console.log("Done");
         }
+        await writeFileAsync(command.dataset, prettier_1.default.format(JSON.stringify(dataset, null, 2), { parser: "json" }));
+        console.log("Done");
     }
     catch (error) {
         console.log(util_1.inspect(error.response.body, false, 3, true));
