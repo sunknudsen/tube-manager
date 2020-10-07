@@ -60,7 +60,7 @@ Notice how suggested video links are platform-specific?
 
 **YouTube**
 
-```console
+```
 This is the 36th episode of the privacy guides series.
 
 In this episode, we explore how to backup and encrypt data using rsync and VeraCrypt on macOS.
