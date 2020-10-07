@@ -33,6 +33,7 @@ const inquirer_1 = __importDefault(require("inquirer"));
 const leven_1 = __importDefault(require("leven"));
 const util_1 = require("util");
 const chalk_1 = __importDefault(require("chalk"));
+const prettier_1 = __importDefault(require("prettier"));
 dotenv_1.default.config();
 const readFileAsync = util_1.promisify(fs_1.readFile);
 const writeFileAsync = util_1.promisify(fs_1.writeFile);
@@ -164,6 +165,9 @@ commander_1.default
                     part: "id,snippet",
                 },
             });
+            if (videosResponse.body.items.length !== 1) {
+                throw new Error("Could not find video");
+            }
             console.log(util_1.inspect(videosResponse.body.items[0], false, 3, true));
         }
         else if (platform === "peertube") {
@@ -176,6 +180,33 @@ commander_1.default
         console.log(error);
     }
 });
+const getPeerTubeVideosFromServer = async function () {
+    let peertubeVideos = [];
+    if (process.env.PEERTUBE_ACCOUNT_NAME) {
+        let start = 0;
+        let total = null;
+        await p_whilst_1.default(() => total === null || peertubeVideos.length < total, async () => {
+            // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos/get
+            const accountVideosResponse = await peertube_1.default.get(`accounts/${process.env.PEERTUBE_ACCOUNT_NAME}/videos`, {
+                searchParams: {
+                    count: 50,
+                    start: start,
+                },
+            });
+            peertubeVideos = peertubeVideos.concat(accountVideosResponse.body.data);
+            total = accountVideosResponse.body.total;
+            start = peertubeVideos.length;
+        });
+    }
+    return peertubeVideos;
+};
+const getPeerTubeVideoMatchingTitle = function (peertubeVideos, title) {
+    for (const peertubeVideo of peertubeVideos) {
+        if (leven_1.default(title, peertubeVideo.name) < 2) {
+            return peertubeVideo;
+        }
+    }
+};
 commander_1.default
     .command("initialize")
     .description("initialize tube manager")
@@ -255,33 +286,9 @@ commander_1.default
         }
         let peertubeVideos = [];
         if (process.env.PEERTUBE_ACCOUNT_NAME) {
-            let start = 0;
-            let total = null;
-            await p_whilst_1.default(() => total === null || peertubeVideos.length < total, async () => {
-                // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos/get
-                const accountVideosResponse = await peertube_1.default.get(`accounts/${process.env.PEERTUBE_ACCOUNT_NAME}/videos`, {
-                    searchParams: {
-                        count: 50,
-                        start: start,
-                    },
-                });
-                peertubeVideos = peertubeVideos.concat(accountVideosResponse.body.data);
-                total = accountVideosResponse.body.total;
-                start = peertubeVideos.length;
-            });
+            peertubeVideos = await getPeerTubeVideosFromServer();
         }
-        const getPeerTubeUuid = function (title) {
-            let uuid;
-            for (let index = 0; index < peertubeVideos.length; index++) {
-                const peertubeVideo = peertubeVideos[index];
-                if (leven_1.default(title, peertubeVideo.name) < 2) {
-                    uuid = peertubeVideo.uuid;
-                    break;
-                }
-            }
-            return uuid;
-        };
-        let json = {
+        let dataset = {
             headings: {
                 sections: "Sections",
                 suggestedVideos: "Suggested",
@@ -297,13 +304,16 @@ commander_1.default
             videos: [],
         };
         youtubeVideos.forEach(function (youtubeVideo) {
-            let peertubeUuid = getPeerTubeUuid(youtubeVideo.snippet.title);
-            if (peertubeVideos.length > 0 && !peertubeUuid) {
-                console.log(`Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`);
+            let peerTubeVideo;
+            if (process.env.PEERTUBE_ACCOUNT_NAME) {
+                peerTubeVideo = getPeerTubeVideoMatchingTitle(peertubeVideos, youtubeVideo.snippet.title);
+                if (!peerTubeVideo) {
+                    console.log(`Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`);
+                }
             }
-            json.videos.push({
+            dataset.videos.push({
                 id: youtubeVideo.id,
-                peerTubeUuid: peertubeUuid ? peertubeUuid : null,
+                peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
                 publishedAt: youtubeVideo.snippet.publishedAt,
                 title: youtubeVideo.snippet.title,
                 description: youtubeVideo.snippet.description,
@@ -316,8 +326,70 @@ commander_1.default
                 footnotes: [],
             });
         });
-        await writeFileAsync(command.dataset, JSON.stringify(json, null, 2));
-        console.log(`Imported ${json.videos.length} videos to ${command.dataset}`);
+        await writeFileAsync(command.dataset, prettier_1.default.format(JSON.stringify(dataset, null, 2), { parser: "json" }));
+        console.log(`Imported ${dataset.videos.length} videos to ${command.dataset}`);
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+commander_1.default
+    .command("import <id>")
+    .description("import video")
+    .option("--dataset <dataset>", "/path/to/dataset.json", path_1.default.resolve(process.cwd(), "tube-manager.json"))
+    .action(async (id, command) => {
+    try {
+        const json = await readFileAsync(command.dataset, "utf8");
+        const dataset = JSON.parse(json);
+        if (getYouTubeVideo(dataset, id)) {
+            throw new Error("Video already in dataset");
+        }
+        // See https://developers.google.com/youtube/v3/docs/videos/list
+        const videosResponse = await youtube_1.default.get("videos", {
+            searchParams: {
+                id: id,
+                part: "id,snippet",
+            },
+        });
+        if (videosResponse.body.items.length !== 1) {
+            throw new Error("Could not find video");
+        }
+        const video = videosResponse.body.items[0];
+        let peerTubeVideo;
+        if (process.env.PEERTUBE_ACCOUNT_NAME) {
+            const peertubeVideos = await getPeerTubeVideosFromServer();
+            peerTubeVideo = getPeerTubeVideoMatchingTitle(peertubeVideos, video.snippet.title);
+            if (!peerTubeVideo) {
+                console.log(`Could not find PeerTube video matching title "${video.snippet.title}"`);
+            }
+        }
+        dataset.videos.push({
+            id: video.id,
+            peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
+            publishedAt: video.snippet.publishedAt,
+            title: video.snippet.title,
+            description: video.snippet.description,
+            tags: video.snippet.tags,
+            sections: [],
+            suggestedVideos: [],
+            links: [],
+            credits: [],
+            affiliateLinks: [],
+            footnotes: [],
+        });
+        dataset.videos.sort(function (a, b) {
+            const dateA = new Date(a.publishedAt);
+            const dateB = new Date(b.publishedAt);
+            if (dateA > dateB) {
+                return -1;
+            }
+            if (dateA < dateB) {
+                return 1;
+            }
+            return 0;
+        });
+        await writeFileAsync(command.dataset, prettier_1.default.format(JSON.stringify(dataset, null, 2), { parser: "json" }));
+        console.log(`Imported video to ${command.dataset}`);
     }
     catch (error) {
         console.log(error);
@@ -404,7 +476,7 @@ const description = function (dataset, platform, video) {
                 const affiliateLinkMatch = affiliateLink.match(/^(\w+?)\.(\w+?)$/);
                 const affiliateLinkAttributes = dataset.affiliateLinks[affiliateLinkMatch[1]][affiliateLinkMatch[2]];
                 if (!affiliateLinkAttributes) {
-                    throw Error("Not found");
+                    throw new Error(`Could not find affiliate link "${affiliateLink}"`);
                 }
                 if (typeof affiliateLinkAttributes === "string") {
                     content += `\n${affiliateLinkAttributes}`;

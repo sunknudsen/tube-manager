@@ -15,6 +15,7 @@ import inquirer from "inquirer"
 import leven from "leven"
 import { promisify, inspect } from "util"
 import chalk from "chalk"
+import prettier from "prettier"
 
 dotenv.config()
 
@@ -148,6 +149,9 @@ program
             part: "id,snippet",
           },
         })
+        if (videosResponse.body.items.length !== 1) {
+          throw new Error("Could not find video")
+        }
         console.log(inspect(videosResponse.body.items[0], false, 3, true))
       } else if (platform === "peertube") {
         // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
@@ -158,6 +162,44 @@ program
       console.log(error)
     }
   })
+
+const getPeerTubeVideosFromServer = async function () {
+  let peertubeVideos: any[] = []
+  if (process.env.PEERTUBE_ACCOUNT_NAME) {
+    let start = 0
+    let total: null | number = null
+    await pWhilst(
+      () => total === null || peertubeVideos.length < total,
+      async () => {
+        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos/get
+        const accountVideosResponse: any = await peertubeClient.get(
+          `accounts/${process.env.PEERTUBE_ACCOUNT_NAME}/videos`,
+          {
+            searchParams: {
+              count: 50,
+              start: start,
+            },
+          }
+        )
+        peertubeVideos = peertubeVideos.concat(accountVideosResponse.body.data)
+        total = accountVideosResponse.body.total
+        start = peertubeVideos.length
+      }
+    )
+  }
+  return peertubeVideos
+}
+
+const getPeerTubeVideoMatchingTitle = function (
+  peertubeVideos: any[],
+  title: string
+): any {
+  for (const peertubeVideo of peertubeVideos) {
+    if (leven(title, peertubeVideo.name) < 2) {
+      return peertubeVideo
+    }
+  }
+}
 
 program
   .command("initialize")
@@ -249,41 +291,9 @@ program
       }
       let peertubeVideos: any[] = []
       if (process.env.PEERTUBE_ACCOUNT_NAME) {
-        let start = 0
-        let total: null | number = null
-        await pWhilst(
-          () => total === null || peertubeVideos.length < total,
-          async () => {
-            // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos/get
-            const accountVideosResponse: any = await peertubeClient.get(
-              `accounts/${process.env.PEERTUBE_ACCOUNT_NAME}/videos`,
-              {
-                searchParams: {
-                  count: 50,
-                  start: start,
-                },
-              }
-            )
-            peertubeVideos = peertubeVideos.concat(
-              accountVideosResponse.body.data
-            )
-            total = accountVideosResponse.body.total
-            start = peertubeVideos.length
-          }
-        )
+        peertubeVideos = await getPeerTubeVideosFromServer()
       }
-      const getPeerTubeUuid = function (title: string) {
-        let uuid: string
-        for (let index = 0; index < peertubeVideos.length; index++) {
-          const peertubeVideo = peertubeVideos[index]
-          if (leven(title, peertubeVideo.name) < 2) {
-            uuid = peertubeVideo.uuid
-            break
-          }
-        }
-        return uuid
-      }
-      let json: any = {
+      let dataset: any = {
         headings: {
           sections: "Sections",
           suggestedVideos: "Suggested",
@@ -299,15 +309,21 @@ program
         videos: [],
       }
       youtubeVideos.forEach(function (youtubeVideo) {
-        let peertubeUuid = getPeerTubeUuid(youtubeVideo.snippet.title)
-        if (peertubeVideos.length > 0 && !peertubeUuid) {
-          console.log(
-            `Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`
+        let peerTubeVideo: any
+        if (process.env.PEERTUBE_ACCOUNT_NAME) {
+          peerTubeVideo = getPeerTubeVideoMatchingTitle(
+            peertubeVideos,
+            youtubeVideo.snippet.title
           )
+          if (!peerTubeVideo) {
+            console.log(
+              `Could not find PeerTube video matching title "${youtubeVideo.snippet.title}"`
+            )
+          }
         }
-        json.videos.push({
+        dataset.videos.push({
           id: youtubeVideo.id,
-          peerTubeUuid: peertubeUuid ? peertubeUuid : null,
+          peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
           publishedAt: youtubeVideo.snippet.publishedAt,
           title: youtubeVideo.snippet.title,
           description: youtubeVideo.snippet.description,
@@ -320,8 +336,87 @@ program
           footnotes: [],
         })
       })
-      await writeFileAsync(command.dataset, JSON.stringify(json, null, 2))
-      console.log(`Imported ${json.videos.length} videos to ${command.dataset}`)
+      await writeFileAsync(
+        command.dataset,
+        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
+      )
+      console.log(
+        `Imported ${dataset.videos.length} videos to ${command.dataset}`
+      )
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+program
+  .command("import <id>")
+  .description("import video")
+  .option(
+    "--dataset <dataset>",
+    "/path/to/dataset.json",
+    path.resolve(process.cwd(), "tube-manager.json")
+  )
+  .action(async (id, command) => {
+    try {
+      const json = await readFileAsync(command.dataset, "utf8")
+      const dataset: Dataset = JSON.parse(json)
+      if (getYouTubeVideo(dataset, id)) {
+        throw new Error("Video already in dataset")
+      }
+      // See https://developers.google.com/youtube/v3/docs/videos/list
+      const videosResponse: any = await youtubeClient.get("videos", {
+        searchParams: {
+          id: id,
+          part: "id,snippet",
+        },
+      })
+      if (videosResponse.body.items.length !== 1) {
+        throw new Error("Could not find video")
+      }
+      const video = videosResponse.body.items[0]
+      let peerTubeVideo: any
+      if (process.env.PEERTUBE_ACCOUNT_NAME) {
+        const peertubeVideos = await getPeerTubeVideosFromServer()
+        peerTubeVideo = getPeerTubeVideoMatchingTitle(
+          peertubeVideos,
+          video.snippet.title
+        )
+        if (!peerTubeVideo) {
+          console.log(
+            `Could not find PeerTube video matching title "${video.snippet.title}"`
+          )
+        }
+      }
+      dataset.videos.push({
+        id: video.id,
+        peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
+        publishedAt: video.snippet.publishedAt,
+        title: video.snippet.title,
+        description: video.snippet.description,
+        tags: video.snippet.tags,
+        sections: [],
+        suggestedVideos: [],
+        links: [],
+        credits: [],
+        affiliateLinks: [],
+        footnotes: [],
+      })
+      dataset.videos.sort(function (a, b) {
+        const dateA = new Date(a.publishedAt)
+        const dateB = new Date(b.publishedAt)
+        if (dateA > dateB) {
+          return -1
+        }
+        if (dateA < dateB) {
+          return 1
+        }
+        return 0
+      })
+      await writeFileAsync(
+        command.dataset,
+        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
+      )
+      console.log(`Imported video to ${command.dataset}`)
     } catch (error) {
       console.log(error)
     }
@@ -476,7 +571,7 @@ const description = function (
         const affiliateLinkAttributes =
           dataset.affiliateLinks[affiliateLinkMatch[1]][affiliateLinkMatch[2]]
         if (!affiliateLinkAttributes) {
-          throw Error("Not found")
+          throw new Error(`Could not find affiliate link "${affiliateLink}"`)
         }
         if (typeof affiliateLinkAttributes === "string") {
           content += `\n${affiliateLinkAttributes}`
