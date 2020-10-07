@@ -144,9 +144,40 @@ The reference material has been updated so what you see in this episode might di
 
 ## Installation
 
+**Step 1: go to https://console.developers.google.com**
+
+**Step 2: create project, enable "YouTube Data API v3" and "YouTube Analytics API" APIs and create "OAuth client ID" credentials**
+
+This is how we get the values for `YOUTUBE_CLIENT_ID` and `YOUTUBE_CLIENT_SECRET` environment variables.
+
+**Step 3: go to https://peertube.sunknudsen.com/api/v1/oauth-clients/local**
+
+> Heads up: replace `peertube.sunknudsen.com` by the hostname of your PeerTube instance.
+
+This is how we get the values for `PEERTUBE_CLIENT_ID` and `PEERTUBE_CLIENT_SECRET` environment variables.
+
+**Step 4: run following commands**
+
 ```shell
 npm install tube-manager -g
+cd $(npm root -g)/tube-manager
+cp .env.sample .env
+open .env
 ```
+
+**Step 5: set environnement variables**
+
+> Heads up: for increased security, saving `YOUTUBE_REFRESH_TOKEN` and `PEERTUBE_REFRESH_TOKEN` environment variables is optional (when omitted, a prompt will ask for them at run time).
+
+Once YouTube client ID and secret are saved to `.env`, run `tube-manager refresh-token youtube` to get values for `YOUTUBE_ACCESS_TOKEN` and `YOUTUBE_REFRESH_TOKEN` environment variables.
+
+Once PeerTube client ID and secret are saved to `.env`, run `tube-manager refresh-token youtube` to get values for `PEERTUBE_ACCESS_TOKEN` and `PEERTUBE_REFRESH_TOKEN` environment variables.
+
+Once access and refresh tokens are saved to `.env`, run `tube-manager channels youtube` to get value of `YOUTUBE_CHANNEL_ID` and `tube-manager channels peertube` to get value of `PEERTUBE_CHANNEL_ID`.
+
+`PEERTUBE_ACCOUNT_NAME` is your PeerTube username.
+
+**All set!**
 
 ## Usage
 
