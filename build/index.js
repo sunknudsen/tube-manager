@@ -553,15 +553,20 @@ const description = function (config, dataset, platform, video) {
     if (video.footnotes.length > 0) {
         content += heading(dataset.headings.footnotes);
         video.footnotes.forEach(function (footnote) {
-            let emoji = "";
-            if (footnote.type === "warning") {
-                emoji = "⚠️ ";
-            }
-            if (footnote.timestamp === "") {
-                content += `\n${emoji}${footnote.message}`;
+            if (typeof footnote === "string") {
+                content += `\n${footnote}`;
             }
             else {
-                content += `\n${emoji}${footnote.timestamp} ${footnote.message}`;
+                let emoji = "";
+                if (footnote.type === "warning") {
+                    emoji = "⚠️ ";
+                }
+                if (footnote.timestamp === "") {
+                    content += `\n${emoji}${footnote.message}`;
+                }
+                else {
+                    content += `\n${emoji}${footnote.timestamp} ${footnote.message}`;
+                }
             }
         });
     }
