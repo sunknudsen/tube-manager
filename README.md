@@ -8,13 +8,15 @@ This project was developed to streamline the process of managing YouTube (and sy
 
 Because managing this by hand as a channel grows becomes exponentially overwhelming, especially when videos are associated to others and affiliate links are used over and over (what if a link changes?).
 
-Not mentioning associated video links need to be platform-specific and having all this in one place is amazing (and git friendly).
+Not mentioning associated video links need to be platform-specific and having all this in one place is amazing (and Git friendly).
 
 For example, here's how the following data is transpiled for YouTube and PeerTube.
 
 Notice how suggested video and affiliate links are automatically expanded?
 
 Notice how suggested video links are platform-specific?
+
+**Data**
 
 ```
 {
@@ -173,7 +175,7 @@ open -a "TextEdit" ~/.tube-manager/config.json
 
 Once YouTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token youtube` to get values of `youtube.accessToken` and `youtube.refreshToken`.
 
-Once PeerTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token peertube` to get values of `peertube.refreshToken` and `peertube.refreshToken` environment variables.
+Once PeerTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token peertube` to get values of `peertube.accessToken` and `peertube.refreshToken` environment variables.
 
 Once access and refresh tokens are saved to `config.json`, run `tube-manager channels youtube` to get value of `youtube.channelId` and `tube-manager channels peertube` to get value of `peertube.channelId`.
 
@@ -205,7 +207,7 @@ Commands:
 **TL;DR**
 
 1. Initialize dataset using `tube-manager initialize`
-2. Upload video to YouTube using [YouTube Studio](https://studio.youtube.com/)
+2. Upload video to YouTube as usual using [YouTube Studio](https://studio.youtube.com/)
 3. Import video to dataset (see [example](./examples/sunknudsen.json)) using `tube-manager import <id>`
 4. Update title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks** and **footnotes**
 5. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
