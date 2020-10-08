@@ -4,7 +4,7 @@
 
 This project was developed to streamline the process of managing YouTube (and syndicated PeerTube) titles, descriptions and tags.
 
-## I can do this by hand, why should I use tube-manager?
+## I can do this by hand, why would I use tube-manager?
 
 Because managing this by hand as a channel grows becomes exponentially overwhelming, especially when videos are associated to others and affiliate links are used over and over (what if a link changes?).
 
