@@ -26,7 +26,6 @@ class Config {
                 Object.assign(platformProps, props[platform]);
             }
         });
-        console.log(this.profiles);
         return this;
     }
     async save() {

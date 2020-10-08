@@ -106,7 +106,6 @@ export default class YouTube {
         },
         responseType: "json",
       })
-
       this.config
         .set({
           youtube: {

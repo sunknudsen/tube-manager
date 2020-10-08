@@ -316,6 +316,7 @@ commander_1.default
             videos: [],
         };
         youtubeVideos.forEach(function (youtubeVideo) {
+            var _a, _b;
             let peerTubeVideo;
             if (peertube.config.props.peertube.accountName) {
                 peerTubeVideo = getPeerTubeVideoMatchingTitle(peertubeVideos, youtubeVideo.snippet.title);
@@ -328,8 +329,8 @@ commander_1.default
                 peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
                 publishedAt: youtubeVideo.snippet.publishedAt,
                 title: youtubeVideo.snippet.title,
-                description: youtubeVideo.snippet.description,
-                tags: youtubeVideo.snippet.tags,
+                description: (_a = youtubeVideo.snippet.description) !== null && _a !== void 0 ? _a : "",
+                tags: (_b = youtubeVideo.snippet.tags) !== null && _b !== void 0 ? _b : [],
                 categoryId: youtubeVideo.snippet.categoryId,
                 sections: [],
                 suggestedVideos: [],
