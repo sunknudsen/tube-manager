@@ -1,6 +1,12 @@
-export declare const getRefreshToken: () => Promise<{
-    access_token: any;
-    refresh_token: any;
-}>;
-declare const youtubeClient: import("got/dist/source").Got;
-export default youtubeClient;
+import { Got } from "got";
+import Config from "./config";
+export default class YouTube {
+    readonly config: Config;
+    got: Got;
+    constructor(config: Config);
+    getRefreshToken(): Promise<{
+        access_token: any;
+        refresh_token: any;
+    }>;
+    getAccessToken(): Promise<any>;
+}

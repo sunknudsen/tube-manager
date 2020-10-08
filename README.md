@@ -148,34 +148,36 @@ The reference material has been updated so what you see in this episode might di
 
 **Step 2: create project, enable "YouTube Data API v3" and "YouTube Analytics API" APIs and create "OAuth client ID" credentials**
 
-This is how we get the values for `YOUTUBE_CLIENT_ID` and `YOUTUBE_CLIENT_SECRET` environment variables.
+This is where we get the values of `youtube.clientId` and `youtube.clientSecret`.
 
 **Step 3: go to https://peertube.sunknudsen.com/api/v1/oauth-clients/local**
 
 > Heads up: replace `peertube.sunknudsen.com` by the hostname of your PeerTube instance.
 
-This is how we get the values for `PEERTUBE_CLIENT_ID` and `PEERTUBE_CLIENT_SECRET` environment variables.
+This is where we get the values of `peertube.clientId` and `peertube.clientSecret`.
 
 **Step 4: run following commands**
 
+> Heads up: these commands have been tested on macOS only.
+
 ```shell
 npm install tube-manager -g
-cd $(npm root -g)/tube-manager
-cp .env.sample .env
-open .env
+mkdir -p ~/.tube-manager
+cp $(npm root -g)/tube-manager/config.json.sample ~/.tube-manager/config.json
+open -a "TextEdit" ~/.tube-manager/config.json
 ```
 
-**Step 5: set environnement variables**
+**Step 5: edit `config.json`**
 
-> Heads up: for increased security, saving `YOUTUBE_REFRESH_TOKEN` and `PEERTUBE_REFRESH_TOKEN` environment variables is optional (when omitted, a prompt will ask for them at run time).
+> Heads up: for increased security, saving `youtube.refreshToken` and `peertube.refreshToken` is optional (when omitted, a prompt will ask for them at run time).
 
-Once YouTube client ID and secret are saved to `.env`, run `tube-manager refresh-token youtube` to get values for `YOUTUBE_ACCESS_TOKEN` and `YOUTUBE_REFRESH_TOKEN` environment variables.
+Once YouTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token youtube` to get values of `youtube.accessToken` and `youtube.refreshToken`.
 
-Once PeerTube client ID and secret are saved to `.env`, run `tube-manager refresh-token youtube` to get values for `PEERTUBE_ACCESS_TOKEN` and `PEERTUBE_REFRESH_TOKEN` environment variables.
+Once PeerTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token peertube` to get values of `peertube.refreshToken` and `peertube.refreshToken` environment variables.
 
-Once access and refresh tokens are saved to `.env`, run `tube-manager channels youtube` to get value of `YOUTUBE_CHANNEL_ID` and `tube-manager channels peertube` to get value of `PEERTUBE_CHANNEL_ID`.
+Once access and refresh tokens are saved to `config.json`, run `tube-manager channels youtube` to get value of `youtube.channelId` and `tube-manager channels peertube` to get value of `peertube.channelId`.
 
-`PEERTUBE_ACCOUNT_NAME` is your PeerTube username.
+`peertube.accountName` is your PeerTube username.
 
 **All set!**
 
@@ -186,26 +188,27 @@ $ tube-manager -h
 Usage: tube-manager [options] [command]
 
 Options:
-  -h, --help                         display help for command
+  -h, --help                          display help for command
 
 Commands:
-  refresh-token <platform>           get refresh token
-  channels <platform>                get channels
-  stats <platform>                   get stats
-  video <platform> <id>              get video
-  initialize [options]               initialize tube manager
-  import [options] <id>              import video
-  preview [options] <platform> <id>  preview video
-  publish [options] [id]             publish video(s)
-  help [command]                     display help for command
+  refresh-token [options] <platform>  get refresh token
+  channels [options] <platform>       get channels
+  stats [options] <platform>          get stats
+  video [options] <platform> <id>     get video
+  initialize [options]                initialize dataset
+  import [options] <id>               import video
+  preview [options] <platform> <id>   preview video
+  publish [options] [id]              publish video(s)
+  help [command]                      display help for command
 ```
 
 **TL;DR**
 
-1. Upload video to YouTube using [YouTube Studio](https://studio.youtube.com/)
-2. Import video to dataset (see [example](./examples/sunknudsen.json)) using `tube-manager import <id>`
-3. Update title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks** and **footnotes**
-4. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
+1. Initialize dataset using `tube-manager initialize`
+2. Upload video to YouTube using [YouTube Studio](https://studio.youtube.com/)
+3. Import video to dataset (see [example](./examples/sunknudsen.json)) using `tube-manager import <id>`
+4. Update title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks** and **footnotes**
+5. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
 
 ## Contributors
 

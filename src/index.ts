@@ -1,15 +1,8 @@
 "use strict"
 
-import dotenv from "dotenv"
 import program from "commander"
 import pWhilst from "p-whilst"
-import youtubeClient, {
-  getRefreshToken as getYouTubeRefreshToken,
-} from "./youtube"
-import peertubeClient, {
-  getRefreshToken as getPeerTubeRefreshToken,
-} from "./peertube"
-import path from "path"
+import { resolve } from "path"
 import { existsSync, readFile, writeFile } from "fs"
 import inquirer from "inquirer"
 import leven from "leven"
@@ -17,8 +10,10 @@ import { promisify, inspect } from "util"
 import chalk from "chalk"
 import prettier from "prettier"
 import formData from "form-data"
-
-dotenv.config()
+import { homedir } from "os"
+import Config from "./config"
+import YouTube from "./youtube"
+import PeerTube from "./peertube"
 
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
@@ -85,16 +80,26 @@ interface Dataset {
 program
   .command("refresh-token <platform>")
   .description("get refresh token")
-  .action(async (platform) => {
+  .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .action(async (platform, command) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       if (platform === "youtube") {
-        let refreshToken = await getYouTubeRefreshToken()
+        let refreshToken = await youtube.getRefreshToken()
         console.log(refreshToken)
       } else if (platform === "peertube") {
-        let refreshToken = await getPeerTubeRefreshToken()
+        let refreshToken = await peertube.getRefreshToken()
         console.log(refreshToken)
       }
     } catch (error) {
@@ -105,14 +110,24 @@ program
 program
   .command("channels <platform>")
   .description("get channels")
-  .action(async (platform) => {
+  .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .action(async (platform, command) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/channels/list
-        const channelsResponse: any = await youtubeClient.get("channels", {
+        const channelsResponse: any = await youtube.got.get("channels", {
           searchParams: {
             part: "id,snippet",
             mine: true,
@@ -129,7 +144,7 @@ program
         console.log(channels)
       } else if (platform === "peertube") {
         // See https://docs.joinpeertube.org/api-rest-reference.html#tag/My-User/paths/~1users~1me/get
-        const meResponse: any = await peertubeClient.get(`users/me`)
+        const meResponse: any = await peertube.got.get(`users/me`)
         let channels: any[] = []
         meResponse.body.videoChannels.forEach(function (videoChannel: any) {
           channels.push({
@@ -148,22 +163,32 @@ program
 program
   .command("stats <platform>")
   .description("get stats")
-  .action(async (platform) => {
+  .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .action(async (platform, command) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/channels/list
-        const channelsResponse: any = await youtubeClient.get("channels", {
+        const channelsResponse: any = await youtube.got.get("channels", {
           searchParams: {
-            id: process.env.YOUTUBE_CHANNEL_ID,
+            id: config.props.youtube.channelId,
             part: "statistics",
           },
         })
         if (channelsResponse.body.items.length !== 1) {
           throw new Error(
-            `Could not find YouTube channel "${process.env.YOUTUBE_CHANNEL_ID}"`
+            `Could not find YouTube channel "${config.props.youtube.channelId}"`
           )
         }
         const statistics = channelsResponse.body.items[0].statistics
@@ -173,7 +198,7 @@ program
         })
       } else if (platform === "peertube") {
         // See https://docs.joinpeertube.org/api-rest-reference.html#tag/My-User/paths/~1users~1me/get
-        const meResponse: any = await peertubeClient.get(`users/me`)
+        const meResponse: any = await peertube.got.get(`users/me`)
         let stats: any = {
           account: {
             followersCount: meResponse.body.account.followersCount,
@@ -196,14 +221,24 @@ program
 program
   .command("video <platform> <id>")
   .description("get video")
-  .action(async (platform, id) => {
+  .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .action(async (platform, id, command) => {
     try {
       if (!["youtube", "peertube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/videos/list
-        const videosResponse: any = await youtubeClient.get("videos", {
+        const videosResponse: any = await youtube.got.get("videos", {
           searchParams: {
             id: id,
             part: "id,snippet",
@@ -215,7 +250,7 @@ program
         console.log(inspect(videosResponse.body.items[0], false, 3, true))
       } else if (platform === "peertube") {
         // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
-        const videosResponse: any = await peertubeClient.get(`videos/${id}`)
+        const videosResponse: any = await peertube.got.get(`videos/${id}`)
         console.log(videosResponse.body)
       }
     } catch (error) {
@@ -223,17 +258,20 @@ program
     }
   })
 
-const getPeerTubeVideosFromServer = async function () {
+const getPeerTubeVideosFromServer = async function (
+  config: Config,
+  peertube: PeerTube
+) {
   let peertubeVideos: any[] = []
-  if (process.env.PEERTUBE_ACCOUNT_NAME) {
+  if (config.props.peertube.accountName) {
     let start = 0
     let total: null | number = null
     await pWhilst(
       () => total === null || peertubeVideos.length < total,
       async () => {
         // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos/get
-        const accountVideosResponse: any = await peertubeClient.get(
-          `accounts/${process.env.PEERTUBE_ACCOUNT_NAME}/videos`,
+        const accountVideosResponse: any = await peertube.got.get(
+          `accounts/${peertube.config.props.peertube.accountName}/videos`,
           {
             searchParams: {
               count: 50,
@@ -263,16 +301,26 @@ const getPeerTubeVideoMatchingTitle = function (
 
 program
   .command("initialize")
-  .description("initialize tube manager")
+  .description("initialize dataset")
+  .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
   .option("--include <include>", "include videos IDs")
   .option("--exclude <exclude>", "exclude videos IDs")
   .option(
     "--dataset <dataset>",
     "/path/to/dataset.json",
-    path.resolve(process.cwd(), "tube-manager.json")
+    resolve(process.cwd(), "tube-manager.json")
   )
   .action(async (command) => {
     try {
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       if (existsSync(command.dataset)) {
         const values = await inquirer.prompt({
           type: "confirm",
@@ -289,15 +337,15 @@ program
       } else {
         ids = []
         // See https://developers.google.com/youtube/v3/docs/channels/list
-        const channelsResponse: any = await youtubeClient.get("channels", {
+        const channelsResponse: any = await youtube.got.get("channels", {
           searchParams: {
-            id: process.env.YOUTUBE_CHANNEL_ID,
+            id: config.props.youtube.channelId,
             part: "contentDetails",
           },
         })
         if (channelsResponse.body.items.length !== 1) {
           throw new Error(
-            `Could not find YouTube channel "${process.env.YOUTUBE_CHANNEL_ID}"`
+            `Could not find YouTube channel "${config.props.youtube.channelId}"`
           )
         }
         const playlistId =
@@ -308,7 +356,7 @@ program
           () => pageToken !== undefined,
           async () => {
             // See https://developers.google.com/youtube/v3/docs/playlistItems/list
-            const playlistItemsResponse: any = await youtubeClient.get(
+            const playlistItemsResponse: any = await youtube.got.get(
               "playlistItems",
               {
                 searchParams: {
@@ -341,7 +389,7 @@ program
       for (let index = 0; index < ids.length; index += chunk) {
         let slice = ids.slice(index, index + chunk)
         // See https://developers.google.com/youtube/v3/docs/videos/list
-        let videosResponse: any = await youtubeClient.get("videos", {
+        let videosResponse: any = await youtube.got.get("videos", {
           searchParams: {
             id: slice.join(","),
             part: "id,snippet",
@@ -350,8 +398,8 @@ program
         youtubeVideos = youtubeVideos.concat(videosResponse.body.items)
       }
       let peertubeVideos: any[] = []
-      if (process.env.PEERTUBE_ACCOUNT_NAME) {
-        peertubeVideos = await getPeerTubeVideosFromServer()
+      if (peertube.config.props.peertube.accountName) {
+        peertubeVideos = await getPeerTubeVideosFromServer(config, peertube)
       }
       let dataset: any = {
         headings: {
@@ -370,7 +418,7 @@ program
       }
       youtubeVideos.forEach(function (youtubeVideo) {
         let peerTubeVideo: any
-        if (process.env.PEERTUBE_ACCOUNT_NAME) {
+        if (peertube.config.props.peertube.accountName) {
           peerTubeVideo = getPeerTubeVideoMatchingTitle(
             peertubeVideos,
             youtubeVideo.snippet.title
@@ -399,10 +447,6 @@ program
           footnotes: [],
         })
       })
-      await writeFileAsync(
-        command.dataset,
-        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
-      )
       console.log(
         `Imported ${dataset.videos.length} videos to ${command.dataset}`
       )
@@ -415,19 +459,29 @@ program
   .command("import <id>")
   .description("import video")
   .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .option(
     "--dataset <dataset>",
     "/path/to/dataset.json",
-    path.resolve(process.cwd(), "tube-manager.json")
+    resolve(process.cwd(), "tube-manager.json")
   )
   .action(async (id, command) => {
     try {
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset: Dataset = JSON.parse(json)
       if (getYouTubeVideo(dataset, id)) {
         throw new Error("Video already in dataset")
       }
       // See https://developers.google.com/youtube/v3/docs/videos/list
-      const videosResponse: any = await youtubeClient.get("videos", {
+      const videosResponse: any = await youtube.got.get("videos", {
         searchParams: {
           id: id,
           part: "id,snippet",
@@ -438,8 +492,11 @@ program
       }
       const video = videosResponse.body.items[0]
       let peerTubeVideo: any
-      if (process.env.PEERTUBE_ACCOUNT_NAME) {
-        const peertubeVideos = await getPeerTubeVideosFromServer()
+      if (peertube.config.props.peertube.accountName) {
+        const peertubeVideos = await getPeerTubeVideosFromServer(
+          config,
+          peertube
+        )
         peerTubeVideo = getPeerTubeVideoMatchingTitle(
           peertubeVideos,
           video.snippet.title
@@ -509,6 +566,7 @@ const heading = function (value: string) {
 }
 
 const description = function (
+  config: Config,
   dataset: Dataset,
   platform: string,
   video: Video
@@ -536,7 +594,7 @@ const description = function (
           throw new Error(`Could not find suggested video "${suggestedVideo}"`)
         }
         if (platform === "youtube") {
-          content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`
+          content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${config.props.youtube.channelWatchUrl}${suggestedVideoAttributes.id}`
         } else if (platform === "peertube") {
           let watchUrl: string
           if (suggestedVideoAttributes.peerTubeUuid === null) {
@@ -545,9 +603,9 @@ const description = function (
                 `Could not find PeerTube version of suggested video "${suggestedVideo}", using YouTube version instead`
               )
             )
-            watchUrl = `${process.env.YOUTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.id}`
+            watchUrl = `${config.props.youtube.channelWatchUrl}${suggestedVideoAttributes.id}`
           } else {
-            watchUrl = `${process.env.PEERTUBE_CHANNEL_WATCH_URL}${suggestedVideoAttributes.peerTubeUuid}`
+            watchUrl = `${config.props.peertube.channelWatchUrl}${suggestedVideoAttributes.peerTubeUuid}`
           }
           content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${watchUrl}`
         }
@@ -647,13 +705,14 @@ const description = function (
 }
 
 const preview = function (
+  config: Config,
   dataset: Dataset,
   platform: string,
   video: Video,
   metadata: boolean
 ) {
   let content = `${chalk.bold(video.title)}`
-  content += `\n\n${description(dataset, platform, video)}`
+  content += `\n\n${description(config, dataset, platform, video)}`
   if (metadata) {
     content += `\n\n${chalk.bold("Tags:")} ${video.tags.join(", ")}`
   }
@@ -664,9 +723,15 @@ program
   .command("preview <platform> <id>")
   .description("preview video")
   .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .option(
     "--dataset <dataset>",
     "/path/to/tube-manager.json",
-    path.resolve(process.cwd(), "tube-manager.json")
+    resolve(process.cwd(), "tube-manager.json")
   )
   .option("--metadata", "enabled metadata preview")
   .action(async (platform, id, command) => {
@@ -674,6 +739,8 @@ program
       if (!["youtube", "peertube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
+      const config = new Config(command.config, command.profile)
+      await config.load()
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset = JSON.parse(json)
       let video
@@ -686,6 +753,7 @@ program
         throw new Error("Could not find video")
       }
       preview(
+        config,
         dataset,
         platform,
         video,
@@ -696,10 +764,16 @@ program
     }
   })
 
-const publishVideo = async function (dataset: Dataset, video: Video) {
+const publishVideo = async function (
+  config: Config,
+  youtube: YouTube,
+  peertube: PeerTube,
+  dataset: Dataset,
+  video: Video
+) {
   try {
     // See https://developers.google.com/youtube/v3/docs/videos/update
-    await youtubeClient.put("videos", {
+    await youtube.got.put("videos", {
       // See https://developers.google.com/youtube/v3/docs/channels/list
       searchParams: {
         part: "snippet",
@@ -708,35 +782,38 @@ const publishVideo = async function (dataset: Dataset, video: Video) {
         id: video.id,
         snippet: {
           title: video.title,
-          description: description(dataset, "youtube", video),
+          description: description(config, dataset, "youtube", video),
           tags: video.tags,
           categoryId: video.categoryId,
         },
       },
     })
     console.log(
-      `Published video to ${process.env.YOUTUBE_CHANNEL_WATCH_URL}${video.id}`
+      `Published video to ${config.props.youtube.channelWatchUrl}${video.id}`
     )
     if (video.peerTubeUuid !== null) {
       let form = new formData()
       form.append("name", video.title)
-      form.append("description", description(dataset, "peertube", video))
+      form.append(
+        "description",
+        description(config, dataset, "peertube", video)
+      )
       video.tags.slice(0, 4).forEach(function (tag, index) {
         form.append(`tags[${index}]`, tag)
       })
       // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
-      const videosResponse: any = await peertubeClient.put(
+      const videosResponse: any = await peertube.got.put(
         `videos/${video.peerTubeUuid}`,
         {
           body: form,
         }
       )
       console.log(
-        `Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`
+        `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
       )
     } else if (
       video.peerTubeUuid === null &&
-      process.env.PEERTUBE_ACCOUNT_NAME
+      peertube.config.props.peertube.accountName
     ) {
       const values = await inquirer.prompt({
         type: "confirm",
@@ -745,22 +822,19 @@ const publishVideo = async function (dataset: Dataset, video: Video) {
       })
       if (values.confirmation === true) {
         let form = new formData()
-        form.append("channelId", process.env.PEERTUBE_CHANNEL_ID)
+        form.append("channelId", config.props.peertube.channelId)
         form.append("name", video.title)
         form.append(
           "targetUrl",
-          `${process.env.YOUTUBE_CHANNEL_WATCH_URL}${video.id}`
+          `${config.props.youtube.channelWatchUrl}${video.id}`
         )
         // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
-        const videosResponse: any = await peertubeClient.post(
-          `videos/imports`,
-          {
-            body: form,
-          }
-        )
+        const videosResponse: any = await peertube.got.post(`videos/imports`, {
+          body: form,
+        })
         video.peerTubeUuid = videosResponse.body.video.uuid
         console.log(
-          `Published video to ${process.env.PEERTUBE_CHANNEL_WATCH_URL}${video.peerTubeUuid}`
+          `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
         )
       }
     }
@@ -773,12 +847,22 @@ program
   .command("publish [id]")
   .description("publish video(s)")
   .option(
+    "--config <config>",
+    "/path/to/config.json",
+    resolve(homedir(), ".tube-manager/config.json")
+  )
+  .option("--profile <profile>", "configuration profile", "default")
+  .option(
     "--dataset <dataset>",
     "/path/to/tube-manager.json",
-    path.resolve(process.cwd(), "tube-manager.json")
+    resolve(process.cwd(), "tube-manager.json")
   )
   .action(async (id, command) => {
     try {
+      const config = new Config(command.config, command.profile)
+      await config.load()
+      const youtube = new YouTube(config)
+      const peertube = new PeerTube(config)
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset: Dataset = JSON.parse(json)
       if (!id) {
@@ -792,14 +876,14 @@ program
         }
         console.log("Publishing all videos...")
         for (const video of dataset.videos) {
-          await publishVideo(dataset, video)
+          await publishVideo(config, youtube, peertube, dataset, video)
         }
       } else {
         const video = getYouTubeVideo(dataset, id)
         if (!video) {
           throw new Error("Could not find video")
         }
-        await publishVideo(dataset, video)
+        await publishVideo(config, youtube, peertube, dataset, video)
         // Find suggested videos that reference video
         let suggestedVideoIds: string[] = []
         dataset.videos.forEach(function (video) {
@@ -819,7 +903,7 @@ program
             if (!video) {
               throw new Error("Could not find video")
             }
-            await publishVideo(dataset, video)
+            await publishVideo(config, youtube, peertube, dataset, video)
           }
         }
       }
