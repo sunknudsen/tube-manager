@@ -828,6 +828,7 @@ const publishVideo = async function (
         let form = new formData()
         form.append("channelId", config.props.peertube.channelId)
         form.append("name", video.title)
+        form.append("privacy", "1")
         form.append(
           "targetUrl",
           `${config.props.youtube.channelWatchUrl}${video.id}`

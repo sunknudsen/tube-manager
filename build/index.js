@@ -655,6 +655,7 @@ const publishVideo = async function (config, youtube, peertube, dataset, video) 
                 let form = new form_data_1.default();
                 form.append("channelId", config.props.peertube.channelId);
                 form.append("name", video.title);
+                form.append("privacy", "1");
                 form.append("targetUrl", `${config.props.youtube.channelWatchUrl}${video.id}`);
                 // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
                 const videosResponse = await peertube.got.post(`videos/imports`, {
