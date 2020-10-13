@@ -241,7 +241,7 @@ program
         const videosResponse: any = await youtube.got.get("videos", {
           searchParams: {
             id: id,
-            part: "id,snippet",
+            part: "id,snippet,processingDetails",
           },
         })
         if (videosResponse.body.items.length !== 1) {
@@ -825,22 +825,43 @@ const publishVideo = async function (
         message: `Do you wish to publish video to PeerTube?`,
       })
       if (values.confirmation === true) {
-        let form = new formData()
-        form.append("channelId", config.props.peertube.channelId)
-        form.append("name", video.title)
-        form.append("privacy", "1")
-        form.append(
-          "targetUrl",
-          `${config.props.youtube.channelWatchUrl}${video.id}`
-        )
-        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
-        const videosResponse: any = await peertube.got.post(`videos/imports`, {
-          body: form,
+        // Make sure YouTube video has been processed
+        const videosResponse: any = await youtube.got.get("videos", {
+          searchParams: {
+            id: video.id,
+            part: "id,processingDetails",
+          },
         })
-        video.peerTubeUuid = videosResponse.body.video.uuid
-        console.log(
-          `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
-        )
+        if (videosResponse.body.items.length !== 1) {
+          throw new Error("Could not find video")
+        }
+        const processingDetails = videosResponse.body.items[0].processingDetails
+        if (
+          processingDetails.processingStatus !== "succeeded" ||
+          processingDetails.thumbnailsAvailability !== "available"
+        ) {
+          console.log(`Video not available, try again in a few minutes`)
+        } else {
+          let form = new formData()
+          form.append("channelId", config.props.peertube.channelId)
+          form.append("name", video.title)
+          form.append("privacy", "1")
+          form.append(
+            "targetUrl",
+            `${config.props.youtube.channelWatchUrl}${video.id}`
+          )
+          // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
+          const videosResponse: any = await peertube.got.post(
+            `videos/imports`,
+            {
+              body: form,
+            }
+          )
+          video.peerTubeUuid = videosResponse.body.video.uuid
+          console.log(
+            `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
+          )
+        }
       }
     }
   } catch (error) {
