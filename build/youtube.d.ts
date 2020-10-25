@@ -5,8 +5,8 @@ export default class YouTube {
     got: Got;
     constructor(config: Config);
     getRefreshToken(): Promise<{
-        access_token: any;
-        refresh_token: any;
+        access_token: string;
+        refresh_token: string;
     }>;
-    getAccessToken(): Promise<any>;
+    getAccessToken(): Promise<string>;
 }

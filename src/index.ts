@@ -10,6 +10,7 @@ import { promisify, inspect } from "util"
 import chalk from "chalk"
 import prettier from "prettier"
 import formData from "form-data"
+import getStream from "get-stream"
 import { homedir } from "os"
 import Config from "./config"
 import YouTube from "./youtube"
@@ -768,50 +769,76 @@ program
     }
   })
 
+interface PublishOptions {
+  public: boolean
+}
+
 const publishVideo = async function (
   config: Config,
   youtube: YouTube,
   peertube: PeerTube,
   dataset: Dataset,
-  video: Video
+  video: Video,
+  options: PublishOptions
 ) {
   try {
+    let json: any = {
+      id: video.id,
+      snippet: {
+        title: video.title,
+        description: description(config, dataset, "youtube", video),
+        tags: video.tags,
+        categoryId: video.categoryId,
+      },
+    }
+    if (options.public === true) {
+      json.status = {
+        privacyStatus: "public",
+      }
+    }
     // See https://developers.google.com/youtube/v3/docs/videos/update
-    await youtube.got.put("videos", {
-      // See https://developers.google.com/youtube/v3/docs/channels/list
+    const videosResponse: any = await youtube.got.put("videos", {
       searchParams: {
-        part: "snippet",
+        part: "snippet,status",
       },
-      json: {
-        id: video.id,
-        snippet: {
-          title: video.title,
-          description: description(config, dataset, "youtube", video),
-          tags: video.tags,
-          categoryId: video.categoryId,
-        },
-      },
+      json: json,
     })
+    const privacyStatus = videosResponse.body.status.privacyStatus
+    const getPrivacy = function (
+      privacyStatus: "private" | "public" | "unlisted"
+    ) {
+      // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
+      if (privacyStatus === "public") {
+        return 1
+      } else if (privacyStatus === "unlisted") {
+        return 2
+      } else if (privacyStatus === "private") {
+        return 3
+      } else {
+        throw new Error(`Invalid privacy status "${privacyStatus}"`)
+      }
+    }
     console.log(
       `Published video to ${config.props.youtube.channelWatchUrl}${video.id}`
     )
     if (video.peerTubeUuid !== null) {
-      let form = new formData()
+      const form = new formData()
       form.append("name", video.title)
       form.append(
         "description",
         description(config, dataset, "peertube", video)
       )
-      video.tags.slice(0, 4).forEach(function (tag, index) {
+      form.append("privacy", getPrivacy(privacyStatus))
+      video.tags.slice(0, 5).forEach(function (tag, index) {
         form.append(`tags[${index}]`, tag)
       })
       // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
-      const videosResponse: any = await peertube.got.put(
-        `videos/${video.peerTubeUuid}`,
-        {
-          body: form,
-        }
-      )
+      await peertube.got.put(`videos/${video.peerTubeUuid}`, {
+        headers: {
+          "Content-Type": `multipart/form-data; boundary=${form.getBoundary()}`,
+        },
+        body: await getStream(form),
+      })
       console.log(
         `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
       )
@@ -826,6 +853,7 @@ const publishVideo = async function (
       })
       if (values.confirmation === true) {
         // Make sure YouTube video has been processed
+        // See https://developers.google.com/youtube/v3/docs/channels/list
         const videosResponse: any = await youtube.got.get("videos", {
           searchParams: {
             id: video.id,
@@ -842,10 +870,10 @@ const publishVideo = async function (
         ) {
           console.log(`Video not available, try again in a few minutes`)
         } else {
-          let form = new formData()
+          const form = new formData()
           form.append("channelId", config.props.peertube.channelId)
           form.append("name", video.title)
-          form.append("privacy", "1")
+          form.append("privacy", getPrivacy(privacyStatus))
           form.append(
             "targetUrl",
             `${config.props.youtube.channelWatchUrl}${video.id}`
@@ -854,7 +882,7 @@ const publishVideo = async function (
           const videosResponse: any = await peertube.got.post(
             `videos/imports`,
             {
-              body: form,
+              body: await getStream(form),
             }
           )
           video.peerTubeUuid = videosResponse.body.video.uuid
@@ -883,6 +911,7 @@ program
     "/path/to/tube-manager.json",
     resolve(process.cwd(), "tube-manager.json")
   )
+  .option("--public")
   .action(async (id, command) => {
     try {
       const config = new Config(command.config, command.profile)
@@ -891,6 +920,9 @@ program
       const peertube = new PeerTube(config)
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset: Dataset = JSON.parse(json)
+      const options: PublishOptions = {
+        public: command.public,
+      }
       if (!id) {
         const values = await inquirer.prompt({
           type: "confirm",
@@ -902,14 +934,14 @@ program
         }
         console.log("Publishing all videos...")
         for (const video of dataset.videos) {
-          await publishVideo(config, youtube, peertube, dataset, video)
+          await publishVideo(config, youtube, peertube, dataset, video, options)
         }
       } else {
         const video = getYouTubeVideo(dataset, id)
         if (!video) {
           throw new Error("Could not find video")
         }
-        await publishVideo(config, youtube, peertube, dataset, video)
+        await publishVideo(config, youtube, peertube, dataset, video, options)
         // Find suggested videos that reference video
         let suggestedVideoIds: string[] = []
         dataset.videos.forEach(function (video) {
@@ -929,7 +961,14 @@ program
             if (!video) {
               throw new Error("Could not find video")
             }
-            await publishVideo(config, youtube, peertube, dataset, video)
+            await publishVideo(
+              config,
+              youtube,
+              peertube,
+              dataset,
+              video,
+              options
+            )
           }
         }
       }

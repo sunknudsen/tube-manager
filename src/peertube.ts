@@ -44,7 +44,10 @@ export default class PeerTube {
       },
     })
   }
-  async getRefreshToken() {
+  async getRefreshToken(): Promise<{
+    access_token: string
+    refresh_token: string
+  }> {
     try {
       const values = await inquirer.prompt([
         {
@@ -78,7 +81,7 @@ export default class PeerTube {
       throw error
     }
   }
-  async getAccessToken() {
+  async getAccessToken(): Promise<string> {
     try {
       let refreshToken = this.config.props.peertube.refreshToken
       if (refreshToken === "") {

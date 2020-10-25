@@ -46,7 +46,10 @@ export default class YouTube {
       },
     })
   }
-  async getRefreshToken() {
+  async getRefreshToken(): Promise<{
+    access_token: string
+    refresh_token: string
+  }> {
     try {
       // See https://developers.google.com/identity/protocols/oauth2/web-server
       // See https://developers.google.com/identity/protocols/oauth2/scopes#youtube
@@ -84,7 +87,7 @@ export default class YouTube {
       throw error
     }
   }
-  async getAccessToken() {
+  async getAccessToken(): Promise<string> {
     try {
       let refreshToken = this.config.props.youtube.refreshToken
       if (refreshToken === "") {
