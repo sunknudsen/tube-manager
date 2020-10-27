@@ -160,7 +160,7 @@ This is where we get the values of `peertube.clientId` and `peertube.clientSecre
 
 **Step 4: run following commands**
 
-> Heads up: these commands have been tested on macOS only.
+#### macOS
 
 ```shell
 npm install tube-manager -g
@@ -168,6 +168,17 @@ mkdir -p ~/.tube-manager
 cp $(npm root -g)/tube-manager/config.json.sample ~/.tube-manager/config.json
 open -a "TextEdit" ~/.tube-manager/config.json
 ```
+
+#### Linux
+
+```shell
+sudo npm install tube-manager -g
+mkdir -p ~/.tube-manager
+cp $(npm root -g)/tube-manager/config.json.sample ~/.tube-manager/config.json
+nano ~/.tube-manager/config.json
+```
+
+:warning:	In the last line, nano is a text editor and you can use another one of your preference. If you get an error you probably don't have installed yet, and you can do this by typing `sudo apt install nano`. After making the necessary changes, if you are using nano you need to press `Ctrl O`, `Enter` and `Ctrl X` to save the changes and exit the file.
 
 **Step 5: edit `config.json`**
 
