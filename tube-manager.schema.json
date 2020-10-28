@@ -17,7 +17,8 @@
           "type": "string"
         }
       },
-      "required": ["label", "url"]
+      "required": ["label", "url"],
+      "additionalProperties": false
     },
     "affiliateProduct": {
       "type": "object",
@@ -53,7 +54,8 @@
           ]
         }
       },
-      "required": ["label", "url"]
+      "required": ["label", "url"],
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -93,7 +95,8 @@
         "credits",
         "affiliateLinks",
         "footnotes"
-      ]
+      ],
+      "additionalProperties": false
     },
     "separator": {
       "description": "Heading separator",
@@ -261,7 +264,8 @@
                       "type": "string"
                     }
                   },
-                  "required": ["type", "timestamp", "message"]
+                  "required": ["type", "timestamp", "message"],
+                  "additionalProperties": false
                 }
               ]
             }
@@ -281,9 +285,11 @@
           "credits",
           "affiliateLinks",
           "footnotes"
-        ]
+        ],
+        "additionalProperties": false
       }
     }
   },
-  "required": ["headings", "separator", "affiliateLinks", "videos"]
+  "required": ["headings", "separator", "affiliateLinks", "videos"],
+  "additionalProperties": false
 }
