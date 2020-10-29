@@ -1,6 +1,6 @@
 {
   "name": "tube-manager",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "description": "Manage YouTube (and syndicated PeerTube) videos using command line.",
   "engines": {
     "node": ">=10.17.0"
@@ -31,8 +31,8 @@
   "license": "MIT",
   "keywords": [
     "cli",
-    "youtube",
-    "peertube"
+    "peertube",
+    "youtube"
   ],
   "devDependencies": {
     "@types/inquirer": "^7.3.1",

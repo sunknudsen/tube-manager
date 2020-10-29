@@ -10,7 +10,7 @@ Because managing this by hand as a channel grows becomes exponentially overwhelm
 
 Not mentioning associated video links need to be platform-specific and having all this in one place is amazing (and Git friendly).
 
-For example, here's how the following data is transpiled for YouTube and PeerTube.
+For example, here’s how the following data from dataset (see [sample](./samples/tube-manager.json)) is transpiled for YouTube and PeerTube.
 
 Notice how suggested video and affiliate links are automatically expanded?
 
@@ -18,7 +18,7 @@ Notice how suggested video links are platform-specific?
 
 **Data**
 
-```
+```json
 {
   "id": "1cz_ViFB6eE",
   "peerTubeUuid": "4b868b2f-5cd3-4a55-9b31-35de881a2b29",
@@ -29,12 +29,12 @@ Notice how suggested video links are platform-specific?
   "categoryId": "27",
   "sections": [
     {
-      "label": "Intro",
-      "timestamp": "0:00"
+      "timestamp": "0:00",
+      "label": "Intro"
     },
     {
-      "label": "Guide",
-      "timestamp": "4:44"
+      "timestamp": "4:44",
+      "label": "Guide"
     }
   ],
   "suggestedVideos": ["video.qPAOMczcuZw"],
@@ -106,6 +106,8 @@ The reference material has been updated so what you see in this episode might di
 **PeerTube**
 
 ```
+This is the 36th episode of the privacy guides series.
+
 In this episode, we explore how to backup and encrypt data using rsync and VeraCrypt on macOS.
 
 ==============================
@@ -146,30 +148,30 @@ The reference material has been updated so what you see in this episode might di
 
 ## Installation
 
-**Step 1: go to https://console.developers.google.com**
+### Step 1: go to https://console.developers.google.com
 
-**Step 2: create project, enable "YouTube Data API v3" and "YouTube Analytics API" APIs and create "OAuth client ID" credentials**
+### Step 2: create project, enable "YouTube Data API v3" and "YouTube Analytics API" APIs and create "OAuth client ID" credentials
 
 This is where we get the values of `youtube.clientId` and `youtube.clientSecret`.
 
-**Step 3: go to https://peertube.sunknudsen.com/api/v1/oauth-clients/local**
+### Step 3: go to https://peertube.sunknudsen.com/api/v1/oauth-clients/local
 
 > Heads up: replace `peertube.sunknudsen.com` by the hostname of your PeerTube instance.
 
 This is where we get the values of `peertube.clientId` and `peertube.clientSecret`.
 
-**Step 4: run following commands**
+### Step 4: run following commands
 
 > Heads up: these commands have been tested on macOS only.
 
 ```shell
-npm install tube-manager -g
+npm install -g tube-manager
 mkdir -p ~/.tube-manager
-cp $(npm root -g)/tube-manager/config.json.sample ~/.tube-manager/config.json
+cp $(npm root -g)/tube-manager/samples/config.json ~/.tube-manager/config.json
 open -a "TextEdit" ~/.tube-manager/config.json
 ```
 
-**Step 5: edit `config.json`**
+### Step 5: edit `config.json`
 
 > Heads up: for increased security, saving `youtube.refreshToken` and `peertube.refreshToken` is optional (when omitted, a prompt will ask for them at run time).
 
@@ -207,10 +209,45 @@ Commands:
 **TL;DR**
 
 1. Initialize dataset using `tube-manager initialize`
-2. Upload video to YouTube as usual using [YouTube Studio](https://studio.youtube.com/)
-3. Import video to dataset (see [example](./examples/sunknudsen.json)) using `tube-manager import <id>`
-4. Update title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks** and **footnotes**
+2. Upload video and thumbnail to YouTube as usual using [YouTube Studio](https://studio.youtube.com/)
+3. Import video to dataset using `tube-manager import <id>`
+4. Edit title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks** and **footnotes** (see [tube-manager.schema.json](./tube-manager.schema.json))
 5. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
+
+## How to use [Visual Studio Code](https://code.visualstudio.com/) to edit config and dataset
+
+Editing config and dataset using Visual Studio Code makes things much more efficient thanks to [IntelliSense](https://code.visualstudio.com/Docs/languages/json).
+
+### Step 1: download and install Visual Studio Code
+
+### Step 2: enable `code` command
+
+Click “View”, then “Command Palette...”, type “install code”, select “Install 'code' command in PATH” and press enter.
+
+### Step 3: download and install Prettier extension
+
+### Step 4: add JSON schemas to user settings
+
+Click “View”, then “Command Palette...”, type “settings json”, select and press enter.
+
+```json
+"json.schemas": [
+  {
+    "fileMatch": [
+      ".tube-manager/config.json"
+    ],
+    "url": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/schemas/config.schema.json"
+  },
+  {
+    "fileMatch": [
+      "tube-manager.json"
+    ],
+    "url": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/schemas/tube-manager.schema.json"
+  }
+]
+```
+
+### Step 5: edit config or dataset using `code ~/.tube-manager/config.json` and `code /path/to/tube-manager.json`
 
 ## Contributors
 

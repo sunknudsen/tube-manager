@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/schemas/tube-manager.schema.json",
+  "title": "tube-manager",
+  "description": "Schema for tube-manager datasets",
+  "type": "object",
+  "definitions": {
+    "profile": {
+      "description": "Profile",
+      "type": "object",
+      "properties": {
+        "peertube": {
+          "description": "YouTube",
+          "type": "object",
+          "properties": {
+            "apiPrefixUrl": {
+              "description": "API prefix URL",
+              "type": "string"
+            },
+            "clientId": {
+              "description": "Client ID",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "Client secret",
+              "type": "string"
+            },
+            "accessToken": {
+              "description": "Access token",
+              "type": "string"
+            },
+            "refreshToken": {
+              "description": "Refresh token",
+              "type": "string"
+            },
+            "accountName": {
+              "description": "Account name",
+              "type": "string"
+            },
+            "channelId": {
+              "description": "Channel ID",
+              "type": "string"
+            },
+            "channelWatchUrl": {
+              "description": "Channel watch URL",
+              "type": "string"
+            }
+          },
+          "required": [
+            "apiPrefixUrl",
+            "clientId",
+            "clientSecret",
+            "accessToken",
+            "refreshToken",
+            "accountName",
+            "channelId",
+            "channelWatchUrl"
+          ],
+          "additionalProperties": false
+        },
+        "youtube": {
+          "description": "YouTube",
+          "type": "object",
+          "properties": {
+            "oauth2PrefixUrl": {
+              "description": "OAuth 2 prefix URL",
+              "type": "string",
+              "default": "https://accounts.google.com/o/oauth2"
+            },
+            "apiPrefixUrl": {
+              "description": "API prefix URL",
+              "type": "string",
+              "default": "https://www.googleapis.com/youtube/v3"
+            },
+            "clientId": {
+              "description": "Client ID",
+              "type": "string"
+            },
+            "clientSecret": {
+              "description": "Client secret",
+              "type": "string"
+            },
+            "accessToken": {
+              "description": "Access token",
+              "type": "string"
+            },
+            "refreshToken": {
+              "description": "Refresh token",
+              "type": "string"
+            },
+            "channelId": {
+              "description": "Channel ID",
+              "type": "string"
+            },
+            "channelWatchUrl": {
+              "description": "Channel watch URL",
+              "type": "string",
+              "default": "https://www.youtube.com/watch?v="
+            }
+          },
+          "required": [
+            "oauth2PrefixUrl",
+            "apiPrefixUrl",
+            "clientId",
+            "clientSecret",
+            "accessToken",
+            "refreshToken",
+            "channelId",
+            "channelWatchUrl"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": ["youtube", "peertube"],
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^default$": {
+      "description": "Profile",
+      "$ref": "#/definitions/profile"
+    },
+    "^.*$": {
+      "description": "Profile",
+      "$ref": "#/definitions/profile"
+    }
+  },
+  "required": ["default"],
+  "additionalProperties": false
+}

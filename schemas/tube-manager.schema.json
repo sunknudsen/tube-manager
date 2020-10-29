@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/tube-manager.schema.json",
+  "$id": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/schemas/tube-manager.schema.json",
   "title": "tube-manager",
   "description": "Schema for tube-manager datasets",
   "type": "object",
@@ -109,9 +109,11 @@
         "^.*$": {
           "description": "Platform",
           "type": "object",
-          "^.*$": {
-            "description": "Product",
-            "$ref": "#/definitions/affiliateProduct"
+          "patternProperties": {
+            "^.*$": {
+              "description": "Product",
+              "$ref": "#/definitions/affiliateProduct"
+            }
           }
         }
       }
