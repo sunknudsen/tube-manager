@@ -150,7 +150,7 @@ The reference material has been updated so what you see in this episode might di
 
 ### Step 1: go to https://console.developers.google.com
 
-### Step 2: create project, enable "YouTube Data API v3" and "YouTube Analytics API" APIs and create "OAuth client ID" credentials
+### Step 2: create project, enable “YouTube Data API v3” and “YouTube Analytics API” APIs and create “OAuth client ID” credentials
 
 This is where we get the values of `youtube.clientId` and `youtube.clientSecret`.
 
