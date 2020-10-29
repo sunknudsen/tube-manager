@@ -1,6 +1,5 @@
 {
   "headings": {
-    "categoryId": "27",
     "sections": "TL;DR",
     "suggestedVideos": "Suggested",
     "links": "Links",
@@ -48,6 +47,92 @@
     }
   },
   "videos": [
+    {
+      "id": "oi8D1fakX-s",
+      "peerTubeUuid": "7ccb7b50-5819-465a-92f6-f1506e585891",
+      "publishedAt": "2020-10-16T18:35:59Z",
+      "title": "How QR codes could be used as a secure transport for passwords (test)",
+      "description": "This is the 42nd episode of the privacy guides series.\n\nIn this episode, we explore how QR codes could be used as a secure transport for passwords.",
+      "tags": [
+        "Privacy",
+        "Security",
+        "Password manager",
+        "1Password",
+        "Bitwarden"
+      ],
+      "categoryId": "27",
+      "sections": [],
+      "suggestedVideos": ["video.eu3iP1njMRI"],
+      "links": [],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "fSZ62ztKRSA",
+      "peerTubeUuid": "8837daf9-f52f-4ab1-ab94-5ece82f57326",
+      "publishedAt": "2020-10-13T16:24:40Z",
+      "title": "First look at Bitcoin and how to improve security of paper backups",
+      "description": "This is the 41st episode of the privacy guides series.\n\nIn this episode, we have a first look at Bitcoin and how to improve security of paper backups.",
+      "tags": ["Privacy", "Security", "Bitcoin", "Paper backup", "QR code"],
+      "categoryId": "27",
+      "sections": [],
+      "suggestedVideos": [],
+      "links": [
+        {
+          "label": "Privacy guides repo (please star)",
+          "url": "https://github.com/sunknudsen/privacy-guides"
+        },
+        {
+          "label": "New YouTube channel (please sub)",
+          "url": "https://www.youtube.com/channel/UCqAvfmnkAPnm8O80xfAPBNw?view_as=subscriber"
+        },
+        {
+          "label": "qr-backup",
+          "url": "https://github.com/sunknudsen/qr-backup"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "BPxTUxz7K5E",
+      "peerTubeUuid": "c7233230-2890-49ad-a07d-2428a74516e2",
+      "publishedAt": "2020-10-08T20:06:31Z",
+      "title": "Talking about creativity and why tube-manager is a godsend for content creators",
+      "description": "This is the 40th episode of the privacy guides series.\n\nIn this episode, we talk about creativity and why tube-manager is steroids for content creators.\n\nThis episode was published using tube-manager.",
+      "tags": ["Privacy", "Security", "Creativity", "YouTube", "PeerTube"],
+      "categoryId": "27",
+      "sections": [
+        {
+          "timestamp": "0:00",
+          "label": "Intro"
+        },
+        {
+          "timestamp": "0:32",
+          "label": "No more trackers"
+        },
+        {
+          "timestamp": "1:40",
+          "label": "Thanks!"
+        },
+        {
+          "timestamp": "2:30",
+          "label": "tube-manager"
+        }
+      ],
+      "suggestedVideos": [],
+      "links": [
+        {
+          "label": "tube-manager",
+          "url": "https://www.npmjs.com/package/tube-manager"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
     {
       "id": "84sCLhy-rw8",
       "peerTubeUuid": "e8bb0910-3e58-412d-9f16-268ca2ed7f99",
@@ -163,12 +248,12 @@
       "categoryId": "27",
       "sections": [
         {
-          "label": "Intro",
-          "timestamp": "0:00"
+          "timestamp": "0:00",
+          "label": "Intro"
         },
         {
-          "label": "Guide",
-          "timestamp": "4:44"
+          "timestamp": "4:44",
+          "label": "Guide"
         }
       ],
       "suggestedVideos": ["video.qPAOMczcuZw"],
@@ -350,7 +435,7 @@
       "peerTubeUuid": "48544a60-9110-45cd-b8f3-8a666cd11773",
       "publishedAt": "2020-07-18T23:29:56Z",
       "title": "How to disable IPv6 on iOS (cellular-only) and macOS (see change log)",
-      "description": "This is the 31th episode of the privacy guides series.\n\nIn this episode, we explore how to disable IPv6 on iOS (cellular-only) and macOS.",
+      "description": "This is the 31st episode of the privacy guides series.\n\nIn this episode, we explore how to disable IPv6 on iOS (cellular-only) and macOS.",
       "tags": ["Privacy", "Security", "Networking", "IPv6", "iOS", "macOS"],
       "categoryId": "27",
       "sections": [],
@@ -590,6 +675,7 @@
       "publishedAt": "2020-06-18T10:45:28Z",
       "title": "Reference material consolidated to sunknudsen.com",
       "description": "In this second behind-the-scenes episode, I share why I consolidated the reference material to sunknudsen.com (goodbye gists and legacy privacy-guides).",
+      "tags": [],
       "categoryId": "27",
       "sections": [],
       "suggestedVideos": [],
@@ -688,7 +774,7 @@
       "peerTubeUuid": "b1133115-b57e-4280-ae2a-6566c1a2d89a",
       "publishedAt": "2020-06-10T17:30:05Z",
       "title": "Why browser extensions such as AdBlock can be dangerous for privacy",
-      "description": "This is the 21th episode of the privacy guides series.\n\nIn this episode, we explore why browser extensions such as AdBlock can be dangerous for privacy.\n\nSpoiler: AdBlock has been acquired by an undisclosed buyer, uses Google Analytics to “aggregate information about traffic patterns and how [their] website and extension are used” and “sometimes share[s] anonymized and aggregated information that cannot be associated with an individual with third parties or the public”.",
+      "description": "This is the 21st episode of the privacy guides series.\n\nIn this episode, we explore why browser extensions such as AdBlock can be dangerous for privacy.\n\nSpoiler: AdBlock has been acquired by an undisclosed buyer, uses Google Analytics to “aggregate information about traffic patterns and how [their] website and extension are used” and “sometimes share[s] anonymized and aggregated information that cannot be associated with an individual with third parties or the public”.",
       "tags": ["Privacy", "Security", "Browser", "Extension", "AdBlock"],
       "categoryId": "27",
       "sections": [],
@@ -759,6 +845,7 @@
       "publishedAt": "2020-06-07T00:19:16Z",
       "title": "The privacy guides community is growing",
       "description": "In this first behind-the-scenes episode, I share why I care about behind-the-scenes and celebrate a first milestone (people are watching these episodes around the clock because of you).\n\nTHANKS!",
+      "tags": [],
       "categoryId": "27",
       "sections": [],
       "suggestedVideos": [],
@@ -940,7 +1027,7 @@
       "peerTubeUuid": "c938940f-9be5-49f9-abd8-010b910f58b5",
       "publishedAt": "2020-05-22T16:37:33Z",
       "title": "How to make cheap, no residue and reusable iPhone camera privacy covers",
-      "description": "This is the 11th episode of the privacy guides series.\n\nIn this episode, we explore how to make cheap, no residue and reusable iPhone camera privacy covers.",
+      "description": "This is the 11st episode of the privacy guides series.\n\nIn this episode, we explore how to make cheap, no residue and reusable iPhone camera privacy covers.",
       "tags": ["Privacy", "Security", "iPhone", "DIY", "CameraCovers"],
       "categoryId": "27",
       "sections": [],

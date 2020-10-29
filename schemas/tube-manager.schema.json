@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/schemas/tube-manager.schema.json",
+  "title": "tube-manager dataset",
+  "description": "Schema for tube-manager dataset",
+  "type": "object",
+  "definitions": {
+    "labelAndUrl": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Label",
+          "type": "string"
+        },
+        "url": {
+          "description": "URL",
+          "type": "string"
+        }
+      },
+      "required": ["label", "url"],
+      "additionalProperties": false
+    },
+    "affiliateProduct": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "Label",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "description": "URL",
+              "type": "string"
+            },
+            {
+              "description": "URL list",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "description": "Label",
+                    "type": "string"
+                  },
+                  "url": {
+                    "description": "URL",
+                    "type": "string"
+                  }
+                }
+              },
+              "uniqueItems": true
+            }
+          ]
+        }
+      },
+      "required": ["label", "url"],
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "headings": {
+      "description": "Heading titles",
+      "type": "object",
+      "properties": {
+        "sections": {
+          "description": "Sections title",
+          "type": "string"
+        },
+        "suggestedVideos": {
+          "description": "Suggested videos title",
+          "type": "string"
+        },
+        "links": {
+          "description": "Links title",
+          "type": "string"
+        },
+        "credits": {
+          "description": "Credits title",
+          "type": "string"
+        },
+        "affiliateLinks": {
+          "description": "Affiliate links title",
+          "type": "string"
+        },
+        "footnotes": {
+          "description": "Footnotes title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sections",
+        "suggestedVideos",
+        "links",
+        "credits",
+        "affiliateLinks",
+        "footnotes"
+      ],
+      "additionalProperties": false
+    },
+    "separator": {
+      "description": "Heading separator",
+      "type": "string"
+    },
+    "affiliateLinks": {
+      "description": "Affiliate links",
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "description": "Platform",
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "description": "Product",
+              "$ref": "#/definitions/affiliateProduct"
+            }
+          }
+        }
+      }
+    },
+    "videos": {
+      "description": "Videos",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "ID",
+            "type": "string"
+          },
+          "peerTubeUuid": {
+            "description": "PeerTube UUID",
+            "type": ["null", "string"]
+          },
+          "publishedAt": {
+            "description": "Published at",
+            "type": "string"
+          },
+          "title": {
+            "description": "Title",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description",
+            "type": "string"
+          },
+          "tags": {
+            "description": "Tags",
+            "type": "array",
+            "items": {
+              "description": "Tag",
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "categoryId": {
+            "description": "Category ID",
+            "type": "string"
+          },
+          "sections": {
+            "description": "Sections",
+            "type": "array",
+            "items": {
+              "description": "Section",
+              "type": "object",
+              "properties": {
+                "timestamp": {
+                  "description": "Timestamp",
+                  "type": "string"
+                },
+                "label": {
+                  "description": "Label",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "suggestedVideos": {
+            "description": "Suggested videos",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "Suggested video",
+                  "type": "string"
+                },
+                {
+                  "description": "Suggested video with label",
+                  "$ref": "#/definitions/labelAndUrl"
+                }
+              ]
+            }
+          },
+          "links": {
+            "description": "Links",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "Link",
+                  "type": "string"
+                },
+                {
+                  "description": "Link with label",
+                  "$ref": "#/definitions/labelAndUrl"
+                }
+              ]
+            }
+          },
+          "credits": {
+            "description": "Credits",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "Credit",
+                  "type": "string"
+                },
+                {
+                  "description": "Credit with label",
+                  "$ref": "#/definitions/labelAndUrl"
+                }
+              ]
+            }
+          },
+          "affiliateLinks": {
+            "description": "Affiliate links",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "Affiliate link",
+                  "type": "string"
+                },
+                {
+                  "description": "Affiliate product",
+                  "$ref": "#/definitions/affiliateProduct"
+                }
+              ]
+            }
+          },
+          "footnotes": {
+            "description": "Footnotes",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "Footnote",
+                  "type": "string"
+                },
+                {
+                  "description": "Footnote with type",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "description": "Type",
+                      "type": "string",
+                      "enum": ["", "warning"]
+                    },
+                    "timestamp": {
+                      "description": "Timestamp",
+                      "type": "string"
+                    },
+                    "message": {
+                      "description": "Message",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["type", "timestamp", "message"],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "peerTubeUuid",
+          "publishedAt",
+          "title",
+          "description",
+          "tags",
+          "categoryId",
+          "sections",
+          "suggestedVideos",
+          "links",
+          "credits",
+          "affiliateLinks",
+          "footnotes"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["headings", "separator", "affiliateLinks", "videos"],
+  "additionalProperties": false
+}
