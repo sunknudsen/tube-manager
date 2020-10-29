@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/sunknudsen/tube-manager/master/schemas/tube-manager.schema.json",
-  "title": "tube-manager",
-  "description": "Schema for tube-manager datasets",
+  "title": "tube-manager dataset",
+  "description": "Schema for tube-manager dataset",
   "type": "object",
   "definitions": {
     "labelAndUrl": {
