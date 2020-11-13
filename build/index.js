@@ -720,7 +720,7 @@ commander_1.default
     .option("--config <config>", "/path/to/config.json", path_1.resolve(os_1.homedir(), ".tube-manager/config.json"))
     .option("--profile <profile>", "configuration profile", "default")
     .option("--dataset <dataset>", "/path/to/tube-manager.json", path_1.resolve(process.cwd(), "tube-manager.json"))
-    .option("--public")
+    .option("--public", "make video(s) public")
     .action(async (id, command) => {
     try {
         const config = new config_1.default(command.config, command.profile);

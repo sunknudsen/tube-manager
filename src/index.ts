@@ -911,7 +911,7 @@ program
     "/path/to/tube-manager.json",
     resolve(process.cwd(), "tube-manager.json")
   )
-  .option("--public")
+  .option("--public", "make video(s) public")
   .action(async (id, command) => {
     try {
       const config = new Config(command.config, command.profile)

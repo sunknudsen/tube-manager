@@ -194,8 +194,6 @@ Once access and refresh tokens are saved to `config.json`, run `tube-manager cha
 
 `peertube.accountName` is your PeerTube username.
 
-**All set!**
-
 ## Usage
 
 ```console
