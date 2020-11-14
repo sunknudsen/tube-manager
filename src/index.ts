@@ -882,6 +882,9 @@ const publishVideo = async function (
           const videosResponse: any = await peertube.got.post(
             `videos/imports`,
             {
+              headers: {
+                "Content-Type": `multipart/form-data; boundary=${form.getBoundary()}`,
+              },
               body: await getStream(form),
             }
           )

@@ -702,6 +702,9 @@ const publishVideo = async function (config, youtube, peertube, dataset, video, 
                     form.append("targetUrl", `${config.props.youtube.channelWatchUrl}${video.id}`);
                     // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
                     const videosResponse = await peertube.got.post(`videos/imports`, {
+                        headers: {
+                            "Content-Type": `multipart/form-data; boundary=${form.getBoundary()}`,
+                        },
                         body: await get_stream_1.default(form),
                     });
                     video.peerTubeUuid = videosResponse.body.video.uuid;
