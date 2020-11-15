@@ -698,7 +698,11 @@ const publishVideo = async function (config, youtube, peertube, dataset, video, 
                     const form = new form_data_1.default();
                     form.append("channelId", config.props.peertube.channelId);
                     form.append("name", video.title);
+                    form.append("description", description(config, dataset, "peertube", video));
                     form.append("privacy", getPrivacy(privacyStatus));
+                    video.tags.slice(0, 5).forEach(function (tag, index) {
+                        form.append(`tags[${index}]`, tag);
+                    });
                     form.append("targetUrl", `${config.props.youtube.channelWatchUrl}${video.id}`);
                     // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
                     const videosResponse = await peertube.got.post(`videos/imports`, {
