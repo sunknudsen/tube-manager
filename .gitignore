@@ -10,3 +10,7 @@ npm-debug.log
 
 # Project files
 .env
+
+# Developement files
+./tube-manager
+./tube-manager.json

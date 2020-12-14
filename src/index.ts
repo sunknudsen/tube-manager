@@ -2,22 +2,51 @@
 
 import program from "commander"
 import pWhilst from "p-whilst"
-import { resolve } from "path"
-import { existsSync, readFile, writeFile } from "fs"
+import { join, parse, resolve } from "path"
+import { createReadStream, existsSync, mkdir, readFile, writeFile } from "fs"
 import inquirer from "inquirer"
+import hasha from "hasha"
 import leven from "leven"
 import { promisify, inspect } from "util"
 import chalk from "chalk"
 import prettier from "prettier"
 import formData from "form-data"
-import getStream from "get-stream"
 import { homedir } from "os"
+import { HTTPError } from "got"
 import Config from "./config"
 import YouTube from "./youtube"
 import PeerTube from "./peertube"
 
+const mkdirAsync = promisify(mkdir)
 const readFileAsync = promisify(readFile)
 const writeFileAsync = promisify(writeFile)
+
+const logError = function (error: Error | HTTPError) {
+  if (error instanceof HTTPError) {
+    console.log(
+      inspect(
+        {
+          request: {
+            method: error.response.request.options.method,
+            url: error.response.request.options.url.href,
+            headers: error.response.request.options.headers,
+            json: error.response.request.options.json,
+            body: error.response.request.options.body,
+          },
+          response: {
+            statusCode: error.response.statusCode,
+            body: error.response.body,
+          },
+        },
+        false,
+        4,
+        true
+      )
+    )
+  } else {
+    console.log(error)
+  }
+}
 
 type Section = {
   label: string
@@ -58,6 +87,7 @@ interface Video {
   credits: Snippet[]
   affiliateLinks: AffiliateSnippet[]
   footnotes: Footnote[]
+  thumbnailHash?: string
 }
 
 interface Dataset {
@@ -104,7 +134,7 @@ program
         console.log(refreshToken)
       }
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
@@ -157,7 +187,7 @@ program
         console.log(channels)
       }
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
@@ -215,7 +245,7 @@ program
         console.log(stats)
       }
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
@@ -255,7 +285,7 @@ program
         console.log(videosResponse.body)
       }
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
@@ -331,6 +361,11 @@ program
         if (values.confirmation !== true) {
           process.exit(0)
         }
+      }
+      // Create asset folder if it doesn't exist
+      const assetDir = join(parse(command.dataset).dir, "tube-manager")
+      if (!existsSync(assetDir)) {
+        await mkdirAsync(assetDir)
       }
       let ids: string[]
       if (command.include) {
@@ -417,7 +452,7 @@ program
         },
         videos: [],
       }
-      youtubeVideos.forEach(function (youtubeVideo) {
+      for (const youtubeVideo of youtubeVideos) {
         let peerTubeVideo: any
         if (peertube.config.props.peertube.accountName) {
           peerTubeVideo = getPeerTubeVideoMatchingTitle(
@@ -447,12 +482,16 @@ program
           affiliateLinks: [],
           footnotes: [],
         })
-      })
+      }
+      await writeFileAsync(
+        command.dataset,
+        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
+      )
       console.log(
         `Imported ${dataset.videos.length} videos to ${command.dataset}`
       )
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
@@ -542,7 +581,7 @@ program
       )
       console.log(`Imported video to ${command.dataset}`)
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
@@ -765,12 +804,13 @@ program
         command.metadata ? command.metadata : false
       )
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 
 interface PublishOptions {
   public: boolean
+  disablePublishRelated: boolean
 }
 
 const publishVideo = async function (
@@ -778,50 +818,75 @@ const publishVideo = async function (
   youtube: YouTube,
   peertube: PeerTube,
   dataset: Dataset,
+  assetDir: string,
   video: Video,
   options: PublishOptions
 ) {
-  try {
-    let json: any = {
-      id: video.id,
-      snippet: {
-        title: video.title,
-        description: description(config, dataset, "youtube", video),
-        tags: video.tags,
-        categoryId: video.categoryId,
-      },
+  let json: any = {
+    id: video.id,
+    snippet: {
+      title: video.title,
+      description: description(config, dataset, "youtube", video),
+      tags: video.tags,
+      categoryId: video.categoryId,
+    },
+  }
+  if (options.public === true) {
+    json.status = {
+      privacyStatus: "public",
     }
-    if (options.public === true) {
-      json.status = {
-        privacyStatus: "public",
-      }
-    }
-    // See https://developers.google.com/youtube/v3/docs/videos/update
-    const videosResponse: any = await youtube.got.put("videos", {
-      searchParams: {
-        part: "snippet,status",
-      },
-      json: json,
+  }
+  let updatedThumbnailHash: string
+  const thumbnail = join(assetDir, `${video.id}.jpg`)
+  if (existsSync(thumbnail)) {
+    const thumbnailHash = await hasha.fromFile(thumbnail, {
+      algorithm: "sha256",
     })
-    const privacyStatus = videosResponse.body.status.privacyStatus
-    const getPrivacy = function (
-      privacyStatus: "private" | "public" | "unlisted"
-    ) {
-      // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
-      if (privacyStatus === "public") {
-        return 1
-      } else if (privacyStatus === "unlisted") {
-        return 2
-      } else if (privacyStatus === "private") {
-        return 3
-      } else {
-        throw new Error(`Invalid privacy status "${privacyStatus}"`)
-      }
+    if (!video.thumbnailHash || video.thumbnailHash !== thumbnailHash) {
+      updatedThumbnailHash = thumbnailHash
     }
-    console.log(
-      `Published video to ${config.props.youtube.channelWatchUrl}${video.id}`
-    )
-    if (video.peerTubeUuid !== null) {
+  }
+  // See https://developers.google.com/youtube/v3/docs/videos/update
+  const videosResponse: any = await youtube.got.put("videos", {
+    searchParams: {
+      part: "snippet,status",
+    },
+    json: json,
+  })
+  // Upload thumbnail to YouTube (if present or has changed)
+  if (updatedThumbnailHash) {
+    // See https://developers.google.com/youtube/v3/docs/thumbnails/set
+    const thumbnailsResponse: any = await youtube.got.post("thumbnails/set", {
+      prefixUrl: config.props.youtube.apiPrefixUrl.replace(
+        "youtube",
+        "upload/youtube"
+      ),
+      searchParams: {
+        videoId: video.id,
+      },
+      body: await readFileAsync(thumbnail),
+    })
+  }
+  console.log(
+    `Published video to ${config.props.youtube.channelWatchUrl}${video.id}`
+  )
+  const privacyStatus = videosResponse.body.status.privacyStatus
+  const getPrivacy = function (
+    privacyStatus: "private" | "public" | "unlisted"
+  ) {
+    // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
+    if (privacyStatus === "public") {
+      return 1
+    } else if (privacyStatus === "unlisted") {
+      return 2
+    } else if (privacyStatus === "private") {
+      return 3
+    } else {
+      throw new Error(`Invalid privacy status "${privacyStatus}"`)
+    }
+  }
+  if (video.peerTubeUuid !== null) {
+    const genForm = async () => {
       const form = new formData()
       form.append("name", video.title)
       form.append(
@@ -832,44 +897,62 @@ const publishVideo = async function (
       video.tags.slice(0, 5).forEach(function (tag, index) {
         form.append(`tags[${index}]`, tag)
       })
-      // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
-      await peertube.got.put(`videos/${video.peerTubeUuid}`, {
-        headers: {
-          "Content-Type": `multipart/form-data; boundary=${form.getBoundary()}`,
-        },
-        body: await getStream(form),
-      })
-      console.log(
-        `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
-      )
-    } else if (
-      video.peerTubeUuid === null &&
-      peertube.config.props.peertube.accountName
-    ) {
-      const values = await inquirer.prompt({
-        type: "confirm",
-        name: "confirmation",
-        message: `Do you wish to publish video to PeerTube?`,
-      })
-      if (values.confirmation === true) {
-        // Make sure YouTube video has been processed
-        // See https://developers.google.com/youtube/v3/docs/channels/list
-        const videosResponse: any = await youtube.got.get("videos", {
-          searchParams: {
-            id: video.id,
-            part: "id,processingDetails",
+      // Upload thumbnail to PeerTube (if present or has changed)
+      if (updatedThumbnailHash) {
+        form.append("previewfile", createReadStream(thumbnail))
+        form.append("thumbnailfile", createReadStream(thumbnail))
+      }
+      return form
+    }
+    const form = await genForm()
+    // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
+    await peertube.got.put(`videos/${video.peerTubeUuid}`, {
+      headers: form.getHeaders(),
+      body: form,
+      hooks: {
+        beforeRetry: [
+          async (options) => {
+            const form = await genForm()
+            options.body = form
+            options.headers[
+              "content-type"
+            ] = `multipart/form-data; boundary=${form.getBoundary()}`
           },
-        })
-        if (videosResponse.body.items.length !== 1) {
-          throw new Error("Could not find video")
-        }
-        const processingDetails = videosResponse.body.items[0].processingDetails
-        if (
-          processingDetails.processingStatus !== "succeeded" ||
-          processingDetails.thumbnailsAvailability !== "available"
-        ) {
-          console.log(`Video not available, try again in a few minutes`)
-        } else {
+        ],
+      },
+    })
+    console.log(
+      `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
+    )
+  } else if (
+    peertube.config.props.peertube.accountName &&
+    video.peerTubeUuid === null
+  ) {
+    const values = await inquirer.prompt({
+      type: "confirm",
+      name: "confirmation",
+      message: "Do you wish to publish video to PeerTube?",
+    })
+    if (values.confirmation === true) {
+      // Make sure YouTube video has been processed
+      // See https://developers.google.com/youtube/v3/docs/channels/list
+      const videosResponse: any = await youtube.got.get("videos", {
+        searchParams: {
+          id: video.id,
+          part: "id,processingDetails",
+        },
+      })
+      if (videosResponse.body.items.length !== 1) {
+        throw new Error("Could not find video")
+      }
+      const processingDetails = videosResponse.body.items[0].processingDetails
+      if (
+        processingDetails.processingStatus !== "succeeded" ||
+        processingDetails.thumbnailsAvailability !== "available"
+      ) {
+        console.log("Video not processed, try again in a few minutes")
+      } else {
+        const genForm = async () => {
           const form = new formData()
           form.append("channelId", config.props.peertube.channelId)
           form.append("name", video.title)
@@ -885,25 +968,40 @@ const publishVideo = async function (
             "targetUrl",
             `${config.props.youtube.channelWatchUrl}${video.id}`
           )
-          // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
-          const videosResponse: any = await peertube.got.post(
-            `videos/imports`,
-            {
-              headers: {
-                "Content-Type": `multipart/form-data; boundary=${form.getBoundary()}`,
-              },
-              body: await getStream(form),
-            }
-          )
-          video.peerTubeUuid = videosResponse.body.video.uuid
-          console.log(
-            `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
-          )
+          // Upload thumbnail to PeerTube (if present or has changed)
+          if (updatedThumbnailHash) {
+            form.append("previewfile", createReadStream(thumbnail))
+            form.append("thumbnailfile", await readFileAsync(thumbnail))
+          }
+          return form
         }
+        const form = await genForm()
+        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
+        const videosResponse: any = await peertube.got.post(`videos/imports`, {
+          headers: form.getHeaders(),
+          body: form,
+          hooks: {
+            beforeRetry: [
+              async (options) => {
+                const form = await genForm()
+                options.body = form
+                options.headers[
+                  "content-type"
+                ] = `multipart/form-data; boundary=${form.getBoundary()}`
+              },
+            ],
+          },
+        })
+        video.peerTubeUuid = videosResponse.body.video.uuid
+        console.log(
+          `Published video to ${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
+        )
       }
     }
-  } catch (error) {
-    throw error
+  }
+  // Save thumbnail hash to dataset (if present or has changed)
+  if (updatedThumbnailHash) {
+    video.thumbnailHash = updatedThumbnailHash
   }
 }
 
@@ -922,6 +1020,7 @@ program
     resolve(process.cwd(), "tube-manager.json")
   )
   .option("--public", "make video(s) public")
+  .option("--disable-publish-related", "do not publish related video(s)")
   .action(async (id, command) => {
     try {
       const config = new Config(command.config, command.profile)
@@ -930,8 +1029,13 @@ program
       const peertube = new PeerTube(config)
       const json = await readFileAsync(command.dataset, "utf8")
       const dataset: Dataset = JSON.parse(json)
+      const assetDir = join(parse(command.dataset).dir, "tube-manager")
+      if (!existsSync(assetDir)) {
+        throw new Error("Could not find asset directory")
+      }
       const options: PublishOptions = {
         public: command.public,
+        disablePublishRelated: command.disablePublishRelated,
       }
       if (!id) {
         const values = await inquirer.prompt({
@@ -944,41 +1048,60 @@ program
         }
         console.log("Publishing all videos...")
         for (const video of dataset.videos) {
-          await publishVideo(config, youtube, peertube, dataset, video, options)
+          await publishVideo(
+            config,
+            youtube,
+            peertube,
+            dataset,
+            assetDir,
+            video,
+            options
+          )
         }
       } else {
         const video = getYouTubeVideo(dataset, id)
         if (!video) {
           throw new Error("Could not find video")
         }
-        await publishVideo(config, youtube, peertube, dataset, video, options)
-        // Find suggested videos that reference video
-        let suggestedVideoIds: string[] = []
-        dataset.videos.forEach(function (video) {
-          video.suggestedVideos.forEach(function (suggestedVideo) {
-            if (
-              typeof suggestedVideo === "string" &&
-              suggestedVideo.match(id)
-            ) {
-              suggestedVideoIds.push(video.id)
-            }
+        await publishVideo(
+          config,
+          youtube,
+          peertube,
+          dataset,
+          assetDir,
+          video,
+          options
+        )
+        if (options.disablePublishRelated === false) {
+          // Find suggested videos that reference video
+          let relatedVideoIds: string[] = []
+          dataset.videos.forEach(function (video) {
+            video.suggestedVideos.forEach(function (suggestedVideo) {
+              if (
+                typeof suggestedVideo === "string" &&
+                suggestedVideo.match(id)
+              ) {
+                relatedVideoIds.push(video.id)
+              }
+            })
           })
-        })
-        if (suggestedVideoIds.length > 0) {
-          console.log("Publishing suggested videos that reference video...")
-          for (const suggestedVideoId of suggestedVideoIds) {
-            const video = getYouTubeVideo(dataset, suggestedVideoId)
-            if (!video) {
-              throw new Error("Could not find video")
+          if (relatedVideoIds.length > 0) {
+            console.log("Publishing related videos...")
+            for (const suggestedVideoId of relatedVideoIds) {
+              const video = getYouTubeVideo(dataset, suggestedVideoId)
+              if (!video) {
+                throw new Error("Could not find video")
+              }
+              await publishVideo(
+                config,
+                youtube,
+                peertube,
+                dataset,
+                assetDir,
+                video,
+                options
+              )
             }
-            await publishVideo(
-              config,
-              youtube,
-              peertube,
-              dataset,
-              video,
-              options
-            )
           }
         }
       }
@@ -988,7 +1111,7 @@ program
       )
       console.log("Done")
     } catch (error) {
-      console.log(error)
+      logError(error)
     }
   })
 

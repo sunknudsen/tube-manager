@@ -27,8 +27,8 @@
           }
         ]
       },
-      "sandiskExtremePro": {
-        "label": "SanDisk Extreme Pro 32GB SDHC UHS-I Card",
+      "sandiskExtremeProSdCard": {
+        "label": "SanDisk Extreme Pro 32GB SDHC UHS-I card",
         "url": [
           {
             "label": "USA",
@@ -43,15 +43,416 @@
             "url": "https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20"
           }
         ]
+      },
+      "sandiskExtremeProMicroSdCard": {
+        "label": "SanDisk Extreme Pro 256GB microSDXC UHS-I card",
+        "url": [
+          {
+            "label": "USA",
+            "url": "https://www.amazon.com/dp/B07FCR3316?tag=sunknudsen06-20"
+          },
+          {
+            "label": "UK",
+            "url": "https://www.amazon.co.uk/dp/B07FCR3316?tag=sunknudsen-21"
+          },
+          {
+            "label": "Canada",
+            "url": "https://www.amazon.ca/dp/B07FCR3316?tag=sunknudsen02-20"
+          }
+        ]
+      },
+      "raspberryPi": {
+        "label": "Raspberry Pi 4 2GB",
+        "url": [
+          {
+            "label": "USA",
+            "url": "https://www.amazon.com/dp/B07TD42S27?tag=sunknudsen06-20"
+          },
+          {
+            "label": "UK",
+            "url": "https://www.amazon.co.uk/dp/B07TGBLK33?tag=sunknudsen-21"
+          },
+          {
+            "label": "Canada",
+            "url": "https://www.amazon.ca/dp/B07W5BJ2CQ?tag=sunknudsen02-20"
+          }
+        ]
+      },
+      "raspberryPiPowerSupply": {
+        "label": "Raspberry Pi 4 USB-C power supply",
+        "url": [
+          {
+            "label": "USA",
+            "url": "https://www.amazon.com/dp/B07W8XHMJZ?tag=sunknudsen06-20"
+          },
+          {
+            "label": "UK",
+            "url": "https://www.amazon.co.uk/dp/B07VKF1CK8?tag=sunknudsen-21"
+          },
+          {
+            "label": "Canada",
+            "url": "https://www.amazon.ca/dp/B07XXSWDKG?tag=sunknudsen02-20"
+          }
+        ]
+      },
+      "raspberryPiKeyboard": {
+        "label": "Raspberry Pi keyboard",
+        "url": [
+          {
+            "label": "USA",
+            "url": "https://www.amazon.com/dp/B07RW1ZFQB?tag=sunknudsen06-20"
+          },
+          {
+            "label": "UK",
+            "url": "https://www.amazon.co.uk/dp/B07RQLQX3P?tag=sunknudsen-21"
+          },
+          {
+            "label": "Canada",
+            "url": "Not available"
+          }
+        ]
+      },
+      "raspberryPiFlircCase": {
+        "label": "Raspberry Pi 4 Flirc case",
+        "url": [
+          {
+            "label": "USA",
+            "url": "https://www.amazon.com/dp/B07WG4DW52?tag=sunknudsen06-20"
+          },
+          {
+            "label": "UK",
+            "url": "Not available"
+          },
+          {
+            "label": "Canada",
+            "url": "https://www.amazon.ca/dp/B07WG4DW52?tag=sunknudsen02-20"
+          }
+        ]
       }
     }
   },
   "videos": [
     {
+      "id": "fW1TUByQqk8",
+      "peerTubeUuid": "ce1751eb-b7f0-471c-b7ce-75caaa2a6db2",
+      "publishedAt": "2020-12-11T12:45:20Z",
+      "title": "How to configure strongSwan client on headless Debian-based Linux computer",
+      "description": "This is the 51st episode of the privacy guides series.\n\nIn this episode, we learn how to configure strongSwan client on headless Debian-based Linux computer.",
+      "tags": ["Privacy", "Security", "Debian", "VPN", "strongSwan"],
+      "categoryId": "27",
+      "sections": [],
+      "suggestedVideos": [
+        "video.6R8uKdstnts",
+        "video.HY3F_vHuTFQ",
+        "video.wsYYGrEXWnk"
+      ],
+      "links": [
+        {
+          "label": "Reference material",
+          "url": "https://sunknudsen.com/privacy-guides/how-to-configure-strongswan-client-on-headless-debian-based-linux-computer"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "6R8uKdstnts",
+      "peerTubeUuid": "c4474c4e-a992-4a0e-9973-4683c3b153a1",
+      "publishedAt": "2020-12-10T22:09:18Z",
+      "title": "How to configure hardened Raspberry Pi OS server",
+      "description": "This is the 50th episode of the privacy guides series.\n\nIn this episode, we learn how to configure hardened Raspberry Pi OS server.",
+      "tags": [
+        "Privacy",
+        "Security",
+        "Debian",
+        "Raspberry Pi OS",
+        "Raspberry Pi"
+      ],
+      "categoryId": "27",
+      "sections": [],
+      "suggestedVideos": ["video.wsYYGrEXWnk", "video.z8hizZRX5-4"],
+      "links": [
+        {
+          "label": "Reference material",
+          "url": "https://sunknudsen.com/privacy-guides/how-to-configure-hardened-raspberry-pi-os-server"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [
+        "amazon.raspberryPi",
+        "amazon.raspberryPiPowerSupply",
+        "amazon.sandiskExtremeProMicroSdCard",
+        "amazon.raspberryPiFlircCase",
+        "amazon.raspberryPiKeyboard"
+      ],
+      "footnotes": []
+    },
+    {
+      "id": "rzEaxL6F2Eg",
+      "peerTubeUuid": "ee282b13-21a2-4b2b-983c-672f64a04228",
+      "publishedAt": "2020-12-08T20:44:32Z",
+      "title": "How to self-host hardened Borg server",
+      "description": "This is the 49th episode of the privacy guides series.\n\nIn this episode, we learn how to self-host hardened Borg server.",
+      "tags": ["Privacy", "Security", "Debian", "VPS", "Borg"],
+      "categoryId": "27",
+      "sections": [],
+      "suggestedVideos": [
+        "video.z8hizZRX5-4",
+        "video.g73XmszOwYs",
+        "video.HY3F_vHuTFQ"
+      ],
+      "links": [
+        {
+          "label": "Reference material",
+          "url": "https://sunknudsen.com/privacy-guides/how-to-configure-hardened-debian-server"
+        },
+        {
+          "label": "1984",
+          "url": "https://1984hosting.com/"
+        },
+        {
+          "label": "BorgBackup",
+          "url": "https://www.borgbackup.org/"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "z8hizZRX5-4",
+      "peerTubeUuid": "9513afc7-cefd-4e8a-9569-8259969bbc55",
+      "publishedAt": "2020-12-08T14:28:19Z",
+      "title": "How to configure hardened Debian server",
+      "description": "This is the 48th episode of the privacy guides series.\n\nIn this episode, we learn how to configure hardened Debian server.",
+      "tags": ["Privacy", "Security", "Debian", "VPS"],
+      "categoryId": "27",
+      "sections": [],
+      "suggestedVideos": [
+        "video.UedA_Dvwjuw",
+        "video.HY3F_vHuTFQ",
+        "video.Upib_vq_EB8",
+        "video.zcq2iZUcQQY"
+      ],
+      "links": [
+        {
+          "label": "Reference material",
+          "url": "https://sunknudsen.com/privacy-guides/how-to-configure-hardened-debian-server"
+        },
+        {
+          "label": "1984",
+          "url": "https://1984hosting.com/"
+        },
+        {
+          "label": "Njalla",
+          "url": "https://njal.la/"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "g73XmszOwYs",
+      "peerTubeUuid": "e4619893-d2c3-41fb-815c-c507342193cc",
+      "publishedAt": "2020-12-07T22:19:29Z",
+      "title": "How to configure Borg client on macOS using command-line",
+      "description": "This is the 47th episode of the privacy guides series.\n\nIn this episode, we learn how to configure Borg client on macOS using command line.",
+      "tags": ["Privacy", "Security", "macOS", "Borg", "Borg Wrapper"],
+      "categoryId": "27",
+      "sections": [
+        {
+          "label": "Intro",
+          "timestamp": "0:00"
+        },
+        {
+          "label": "RAID 10 vs RAID 6 vs RAID-Z3",
+          "timestamp": "4:08"
+        },
+        {
+          "label": "Guide",
+          "timestamp": "7:14"
+        }
+      ],
+      "suggestedVideos": [
+        "video.asZX2YbTaNE",
+        "video.HY3F_vHuTFQ",
+        "video.1cz_ViFB6eE"
+      ],
+      "links": [
+        {
+          "label": "Reference material",
+          "url": "https://sunknudsen.com/privacy-guides/how-to-configure-borg-client-on-macos-using-command-line"
+        },
+        {
+          "label": "Borg",
+          "url": "https://www.borgbackup.org/"
+        },
+        {
+          "label": "BorgBase",
+          "url": "https://www.borgbase.com/"
+        },
+        {
+          "label": "rsync.net",
+          "url": "https://rsync.net/products/attic.html"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "asZX2YbTaNE",
+      "peerTubeUuid": "e8f404dc-92aa-447f-9696-e12b6244e567",
+      "publishedAt": "2020-11-20T19:34:30Z",
+      "title": "How to backup data privately and securely to the cloud using Borg and Vorta",
+      "description": "This is the 46th episode of the privacy guides series.\n\nIn this episode, we learn how to backup data privately and securely to the cloud using Borg and Vorta.",
+      "tags": ["Privacy", "Security", "macOS", "Borg", "Vorta"],
+      "categoryId": "27",
+      "sections": [
+        {
+          "label": "Intro",
+          "timestamp": "0:00"
+        },
+        {
+          "label": "Borg",
+          "timestamp": "2:04"
+        },
+        {
+          "label": "Vorta",
+          "timestamp": "6:53"
+        }
+      ],
+      "suggestedVideos": ["video.1cz_ViFB6eE", "video.K-FSfjLVno4"],
+      "links": [
+        {
+          "label": "sunknudsen/privacy-guides: Privacy guides reference material",
+          "url": "https://github.com/sunknudsen/privacy-guides"
+        },
+        {
+          "label": "Borg",
+          "url": "https://www.borgbackup.org/"
+        },
+        {
+          "label": "Vorta",
+          "url": "https://vorta.borgbase.com/"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "K-FSfjLVno4",
+      "peerTubeUuid": "9ccfdd83-62ee-42fe-86dc-0c9651c21fe2",
+      "publishedAt": "2020-11-16T00:20:21Z",
+      "title": "More on trustd and how Little Snitch allows us to see the invisible",
+      "description": "This is the 45th episode of the privacy guides series.\n\nIn this episode, we learn more on trustd and how Little Snitch allows us to see the invisible.",
+      "tags": ["Privacy", "Security", "macOS", "Little Snitch"],
+      "categoryId": "27",
+      "sections": [
+        {
+          "label": "More on trustd",
+          "timestamp": "0:00"
+        },
+        {
+          "label": "How Little Snitch allows us to see the invisible",
+          "timestamp": "4:37"
+        }
+      ],
+      "suggestedVideos": [
+        "video.l9kSZuqcqN4",
+        "video.uJBgb8XJoA8",
+        "video.vC7fZv13aXM",
+        "video.HY3F_vHuTFQ",
+        "video.1cz_ViFB6eE"
+      ],
+      "links": [
+        {
+          "label": "Does Apple really log every app you run? A technical look – Jacopo Jannone - blog",
+          "url": "https://blog.jacopo.io/en/post/apple-ocsp/"
+        },
+        {
+          "label": "Little Snitch",
+          "url": "https://www.obdev.at/products/littlesnitch/index.html"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "vC7fZv13aXM",
+      "peerTubeUuid": "38bd71d0-dfd8-46dd-a692-1b405b9bbaff",
+      "publishedAt": "2020-11-14T16:10:58Z",
+      "title": "Down the “Your Computer Isn't Yours” rabbit hole and how to patch macOS",
+      "description": "This is the 44th episode of the privacy guides series.\n\nIn this episode, we go down the “Your Computer Isn't Yours” rabbit hole and explore how to patch macOS.\n\nPatch 👉 echo \"127.0.0.1 ocsp.apple.com isrg.trustid.ocsp.identrust.com\" | sudo tee -a /etc/hosts\n\nUndo patch 👉 sudo sed -i \"\" \"/ocsp\\.apple\\.com/d\" /etc/hosts",
+      "tags": ["Privacy", "Security", "macOS", "trustd"],
+      "categoryId": "27",
+      "sections": [
+        {
+          "label": "Down the rabbit hole",
+          "timestamp": "0:00"
+        },
+        {
+          "label": "Patch",
+          "timestamp": "5:35"
+        }
+      ],
+      "suggestedVideos": ["video.sdohcouTUhQ"],
+      "links": [
+        {
+          "label": "Jeffrey Paul: Your Computer Isn't Yours",
+          "url": "https://sneak.berlin/20201112/your-computer-isnt-yours/"
+        },
+        {
+          "label": "Little Snitch",
+          "url": "https://www.obdev.at/products/littlesnitch/index.html"
+        }
+      ],
+      "credits": ["Shout-out to Jeffrey Paul for breaking this story!"],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
+      "id": "b9UZBiCQvbE",
+      "peerTubeUuid": "8fcfbefc-5ee9-4043-ad43-b31033be92d1",
+      "publishedAt": "2020-11-13T21:36:18Z",
+      "title": "Why I don’t recommend using Drive or Dropbox for backups",
+      "description": "This is the 43rd episode of the privacy guides series.\n\nIn this episode, we explore why I don’t recommend using Drive or Dropbox for backups.",
+      "tags": ["Privacy", "Security", "DropBox", "Google Drive", "Borg"],
+      "categoryId": "27",
+      "sections": [
+        {
+          "label": "Status update",
+          "timestamp": "0:00"
+        },
+        {
+          "label": "Episode",
+          "timestamp": "2:22"
+        }
+      ],
+      "suggestedVideos": ["video.1cz_ViFB6eE"],
+      "links": [
+        {
+          "label": "TEDxTKMCE",
+          "url": "https://tedxtkmce.in"
+        },
+        {
+          "label": "dropbox-upload",
+          "url": "https://github.com/sunknudsen/dropbox-upload"
+        }
+      ],
+      "credits": [],
+      "affiliateLinks": [],
+      "footnotes": []
+    },
+    {
       "id": "oi8D1fakX-s",
       "peerTubeUuid": "7ccb7b50-5819-465a-92f6-f1506e585891",
       "publishedAt": "2020-10-16T18:35:59Z",
-      "title": "How QR codes could be used as a secure transport for passwords (test)",
+      "title": "How QR codes could be used as a secure transport for passwords",
       "description": "This is the 42nd episode of the privacy guides series.\n\nIn this episode, we explore how QR codes could be used as a secure transport for passwords.",
       "tags": [
         "Privacy",
@@ -162,8 +563,8 @@
       "id": "0nVOB0EE5ps",
       "peerTubeUuid": "d7490daa-f55e-48bc-85b8-40ed39a5d2c6",
       "publishedAt": "2020-09-26T14:19:09Z",
-      "title": "How to clean uninstall apps on macOS using AppCleaner open source alternative",
-      "description": "This is the 38th episode of the privacy guides series.\n\nIn this episode, we explore how to clean uninstall apps on macOS using AppCleaner open source alternative.",
+      "title": "How to clean uninstall macOS apps using AppCleaner open source alternative",
+      "description": "This is the 38th episode of the privacy guides series.\n\nIn this episode, we explore how to clean uninstall macOS apps using AppCleaner open source alternative.",
       "tags": ["Privacy", "Security", "macOS", "AppCleaner"],
       "categoryId": "27",
       "sections": [],
@@ -171,7 +572,7 @@
       "links": [
         {
           "label": "Reference material",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-clean-uninstall-apps-on-macos-using-appcleaner-open-source-alternative"
+          "url": "https://sunknudsen.com/privacy-guides/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative"
         },
         {
           "label": "Privacy guides repo",
@@ -235,7 +636,7 @@
         }
       ],
       "credits": [],
-      "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremePro"],
+      "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremeProSdCard"],
       "footnotes": []
     },
     {
@@ -268,13 +669,9 @@
         }
       ],
       "credits": [],
-      "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremePro"],
+      "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremeProSdCard"],
       "footnotes": [
-        {
-          "type": "",
-          "timestamp": "",
-          "message": "The reference material has been updated so what you see in this episode might differ."
-        }
+        "The reference material has been updated so what you see in this episode might differ."
       ]
     },
     {
@@ -309,8 +706,8 @@
       "id": "HY3F_vHuTFQ",
       "peerTubeUuid": "0e00af60-9e19-428c-8084-61c7a0b49a50",
       "publishedAt": "2020-08-17T23:05:17Z",
-      "title": "How to self-host a hardened strongSwan IKEv2/IPsec VPN server for iOS and macOS",
-      "description": "This is the 34th episode of the privacy guides series.\n\nIn this episode, we explore how to self-host a hardened strongSwan IKEv2/IPsec VPN server for iOS and macOS.",
+      "title": "How to self-host hardened strongSwan IKEv2/IPsec VPN server for iOS and macOS",
+      "description": "This is the 34th episode of the privacy guides series.\n\nIn this episode, we explore how to self-host hardened strongSwan IKEv2/IPsec VPN server for iOS and macOS.",
       "tags": ["Privacy", "Security", "VPN", "strongSwan", "macOS", "iOS"],
       "categoryId": "27",
       "sections": [],
@@ -318,7 +715,7 @@
       "links": [
         {
           "label": "Reference material",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-self-host-a-hardened-strongswan-ikev2-ipsec-vpn-server-for-ios-and-macos"
+          "url": "https://sunknudsen.com/privacy-guides/how-to-self-host-hardened-strongswan-ikev2-ipsec-vpn-server-for-ios-and-macos"
         },
         {
           "label": "1984",
@@ -337,8 +734,8 @@
       "id": "zcq2iZUcQQY",
       "peerTubeUuid": "56b48e7a-35bf-460d-9829-1f72b78daf5e",
       "publishedAt": "2020-08-13T20:18:52Z",
-      "title": "How to benchmark performance of server using Speedtest and SysBench",
-      "description": "This is the 33rd episode of the privacy guides series.\n\nIn this episode, we explore how to benchmark performance of server using Speedtest and SysBench.",
+      "title": "How to benchmark server performance using Speedtest and SysBench",
+      "description": "This is the 33rd episode of the privacy guides series.\n\nIn this episode, we explore how to benchmark server performance using Speedtest and SysBench.",
       "tags": [
         "Privacy",
         "Security",
@@ -355,7 +752,7 @@
       "links": [
         {
           "label": "Reference material",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-benchmark-performance-of-server-using-speedtest-and-sysbench"
+          "url": "https://sunknudsen.com/privacy-guides/how-to-benchmark-server-performance-using-speedtest-and-sysbench"
         },
         {
           "label": "1984",
@@ -662,7 +1059,7 @@
       "links": [
         {
           "label": "Reference material",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-encrypt-sign-and-decrypt-messages-using-pgp-on-macos"
+          "url": "This link is pending review by YouTube (please use search on https://sunknudsen.com/privacy-guides)"
         }
       ],
       "credits": [],
@@ -878,8 +1275,8 @@
       "id": "b9aMJZjZ4pw",
       "peerTubeUuid": "c20554c9-dd24-4916-a3a0-9ae605beae82",
       "publishedAt": "2020-06-04T13:25:05Z",
-      "title": "How to create a Signal account without using your personal phone number",
-      "description": "This is the 17th episode of the privacy guides series.\n\nIn this episode, we explore how to create a Signal account without using your personal phone number.",
+      "title": "How to create Signal account without using personal phone number",
+      "description": "This is the 17th episode of the privacy guides series.\n\nIn this episode, we explore how to create Signal account without using personal phone number.",
       "tags": ["Privacy", "Security", "iOS", "macOS", "Messaging", "Signal"],
       "categoryId": "27",
       "sections": [],
@@ -887,7 +1284,7 @@
       "links": [
         {
           "label": "Reference material",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-create-a-signal-account-without-using-your-personal-phone-number"
+          "url": "https://sunknudsen.com/privacy-guides/how-to-create-signal-account-without-using-personal-phone-number"
         }
       ],
       "credits": [],
@@ -1095,8 +1492,8 @@
       "id": "ASXANpr_zX8",
       "peerTubeUuid": "e2c96654-ffa1-4535-b833-f801c02b7113",
       "publishedAt": "2020-05-19T14:57:15Z",
-      "title": "How to spoof your MAC address and hostname automatically at boot on macOS",
-      "description": "This is the ninth episode of the privacy guides series.\n\nIn this episode, we explore how to spoof your MAC address and hostname automatically at boot on macOS.",
+      "title": "How to spoof MAC address and hostname automatically at boot on macOS",
+      "description": "This is the ninth episode of the privacy guides series.\n\nIn this episode, we explore how to spoof MAC address and hostname automatically at boot on macOS.",
       "tags": [
         "Privacy",
         "Security",
@@ -1111,7 +1508,7 @@
       "links": [
         {
           "label": "Reference material",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-spoof-your-mac-address-and-hostname-automatically-at-boot-on-macos"
+          "url": "https://sunknudsen.com/privacy-guides/how-to-spoof-mac-address-and-hostname-automatically-at-boot-on-macos"
         }
       ],
       "credits": [],
@@ -1294,7 +1691,7 @@
       "suggestedVideos": ["video.NH4DdXC0RFw"],
       "links": [],
       "credits": [],
-      "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremePro"],
+      "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremeProSdCard"],
       "footnotes": []
     },
     {
@@ -1354,7 +1751,8 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "thumbnailHash": "29fad42f3dbfe51bb33be466b290a79bb20f6b8f639cfdb2933f138db5f77c43"
     }
   ]
 }

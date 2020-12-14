@@ -92,7 +92,7 @@ USA 👉 https://www.amazon.com/dp/B07BPHML28?tag=sunknudsen06-20
 UK 👉 https://www.amazon.co.uk/dp/B07D1JMX87?tag=sunknudsen-21
 Canada 👉 https://www.amazon.ca/dp/B07BPHML28?tag=sunknudsen02-20
 
-SanDisk Extreme Pro 32GB SDHC UHS-I Card
+SanDisk Extreme Pro 32GB SDHC UHS-I card
 USA 👉 https://www.amazon.com/dp/B01J5RHBQ4?tag=sunknudsen06-20
 UK 👉 https://www.amazon.co.uk/dp/B01J5RHBQ4?tag=sunknudsen-21
 Canada 👉 https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20
@@ -135,7 +135,7 @@ USA 👉 https://www.amazon.com/dp/B07BPHML28?tag=sunknudsen06-20
 UK 👉 https://www.amazon.co.uk/dp/B07D1JMX87?tag=sunknudsen-21
 Canada 👉 https://www.amazon.ca/dp/B07BPHML28?tag=sunknudsen02-20
 
-SanDisk Extreme Pro 32GB SDHC UHS-I Card
+SanDisk Extreme Pro 32GB SDHC UHS-I card
 USA 👉 https://www.amazon.com/dp/B01J5RHBQ4?tag=sunknudsen06-20
 UK 👉 https://www.amazon.co.uk/dp/B01J5RHBQ4?tag=sunknudsen-21
 Canada 👉 https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20
@@ -150,7 +150,7 @@ The reference material has been updated so what you see in this episode might di
 
 ### Step 1: go to https://console.developers.google.com
 
-### Step 2: create project, enable “YouTube Data API v3” and “YouTube Analytics API” APIs and create “OAuth client ID” credentials
+### Step 2: create project, enable “YouTube Data API v3” and “YouTube Analytics API” APIs and create “OAuth client ID” credentials (required scopes: `.../auth/yt-analytics.readonly` and `.../auth/youtube.force-ssl`)
 
 This is where we get the values of `youtube.clientId` and `youtube.clientSecret`.
 
@@ -173,7 +173,7 @@ open -a "TextEdit" ~/.tube-manager/config.json
 
 #### Linux
 
-> Heads up: if `nano` is not installed, please try `vi`.
+> Heads up: if `nano` is not installed, please use `vi`.
 
 ```shell
 sudo npm install tube-manager -g

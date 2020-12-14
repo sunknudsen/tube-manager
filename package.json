@@ -1,6 +1,6 @@
 {
   "name": "tube-manager",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Manage YouTube (and syndicated PeerTube) videos using command line.",
   "engines": {
     "node": ">=10.17.0"
@@ -14,6 +14,7 @@
     "commander": "^6.2.0",
     "form-data": "^3.0.0",
     "got": "^11.8.0",
+    "hasha": "^5.2.2",
     "inquirer": "^7.3.3",
     "leven": "^3.1.0",
     "open": "^7.3.0",
@@ -25,6 +26,7 @@
     "start": "node build/index.js",
     "code": "tsc -w",
     "build": "rm -fr build/*; tsc",
+    "purge": "rm -fr tube-manager tube-manager.json",
     "ncu": "ncu -u"
   },
   "author": "Sun Knudsen <hello@sunknudsen.com>",
