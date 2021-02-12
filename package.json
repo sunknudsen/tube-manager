@@ -32,9 +32,9 @@
     "query-string": "^6.14.0"
   },
   "scripts": {
-    "start": "node build/index.js",
     "code": "tsc -w",
     "build": "rm -fr build/*; tsc",
+    "prepublishOnly": "npm run build",
     "purge": "rm -fr tube-manager tube-manager.json",
     "ncu": "ncu -u"
   },
