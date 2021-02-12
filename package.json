@@ -1,26 +1,35 @@
 {
   "name": "tube-manager",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manage YouTube (and syndicated PeerTube) videos using command line.",
   "engines": {
-    "node": ">=10.17.0"
+    "node": ">=10.23.2"
   },
   "bin": {
     "tube-manager": "./bin/tube-manager.js"
   },
   "main": "build/index.js",
+  "files": [
+    "bin/",
+    "build/",
+    "package.json",
+    "schemas/",
+    "LICENCE",
+    "README.md"
+  ],
   "dependencies": {
     "chalk": "^4.1.0",
-    "commander": "^6.2.0",
+    "commander": "^7.0.0",
     "form-data": "^3.0.0",
-    "got": "^11.8.0",
+    "fs-extra": "^9.1.0",
+    "got": "^11.8.1",
     "hasha": "^5.2.2",
     "inquirer": "^7.3.3",
     "leven": "^3.1.0",
-    "open": "^7.3.0",
+    "open": "^7.4.0",
     "p-whilst": "^2.1.0",
-    "prettier": "^2.1.2",
-    "query-string": "^6.13.7"
+    "prettier": "^2.2.1",
+    "query-string": "^6.14.0"
   },
   "scripts": {
     "start": "node build/index.js",
@@ -37,11 +46,12 @@
     "youtube"
   ],
   "devDependencies": {
+    "@types/fs-extra": "^9.0.7",
     "@types/inquirer": "^7.3.1",
-    "@types/node": "^14.14.7",
-    "@types/prettier": "^2.1.5",
-    "npm-check-updates": "^10.0.0",
-    "typescript": "^4.0.5"
+    "@types/node": "^14.14.27",
+    "@types/prettier": "^2.2.0",
+    "npm-check-updates": "^11.1.1",
+    "typescript": "^4.1.5"
   },
   "repository": {
     "type": "git",

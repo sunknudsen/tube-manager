@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const inquirer_1 = __importDefault(require("inquirer"));
 const got_1 = __importDefault(require("got"));
+const chalk_1 = __importDefault(require("chalk"));
 class PeerTube {
     constructor(config) {
         this.config = config;
@@ -114,7 +115,7 @@ class PeerTube {
                     },
                 })
                     .save();
-                console.log(`PeerTube refresh token has changed to "${response.body.refresh_token}"`);
+                console.info(`PeerTube refresh token has changed to ${chalk_1.default.bold(response.body.refresh_token)}`);
             }
             return response.body.access_token;
         }

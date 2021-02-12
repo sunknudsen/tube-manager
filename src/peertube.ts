@@ -2,6 +2,7 @@
 
 import inquirer from "inquirer"
 import got, { Got } from "got"
+import chalk from "chalk"
 import Config from "./config"
 
 export default class PeerTube {
@@ -120,8 +121,10 @@ export default class PeerTube {
             },
           })
           .save()
-        console.log(
-          `PeerTube refresh token has changed to "${response.body.refresh_token}"`
+        console.info(
+          `PeerTube refresh token has changed to ${chalk.bold(
+            response.body.refresh_token
+          )}`
         )
       }
       return response.body.access_token
