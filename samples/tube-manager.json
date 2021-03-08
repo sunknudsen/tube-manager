@@ -5,7 +5,8 @@
     "links": "Links",
     "credits": "Credits",
     "affiliateLinks": "Affiliate links",
-    "footnotes": "Change log"
+    "footnotes": "Change log",
+    "support": "Support"
   },
   "separator": "👉",
   "affiliateLinks": {
@@ -154,7 +155,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "6R8uKdstnts",
@@ -186,7 +193,13 @@
         "amazon.raspberryPiFlircCase",
         "amazon.raspberryPiKeyboard"
       ],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "rzEaxL6F2Eg",
@@ -218,7 +231,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "z8hizZRX5-4",
@@ -251,7 +270,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "g73XmszOwYs",
@@ -300,7 +325,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "asZX2YbTaNE",
@@ -341,7 +372,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "K-FSfjLVno4",
@@ -380,7 +417,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "vC7fZv13aXM",
@@ -413,7 +456,13 @@
       ],
       "credits": ["Shout-out to Jeffrey Paul for breaking this story!"],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "b9UZBiCQvbE",
@@ -446,7 +495,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "oi8D1fakX-s",
@@ -467,7 +522,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "fSZ62ztKRSA",
@@ -495,7 +556,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "BPxTUxz7K5E",
@@ -532,7 +599,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "84sCLhy-rw8",
@@ -557,7 +630,13 @@
         }
       ],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "0nVOB0EE5ps",
@@ -581,7 +660,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "01PgqzLjfuI",
@@ -609,7 +694,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "qPAOMczcuZw",
@@ -637,7 +728,13 @@
       ],
       "credits": [],
       "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremeProSdCard"],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "1cz_ViFB6eE",
@@ -672,6 +769,12 @@
       "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremeProSdCard"],
       "footnotes": [
         "The reference material has been updated so what you see in this episode might differ."
+      ],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
       ]
     },
     {
@@ -700,7 +803,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "HY3F_vHuTFQ",
@@ -728,7 +837,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "zcq2iZUcQQY",
@@ -765,7 +880,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "UedA_Dvwjuw",
@@ -805,7 +926,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "UWBtPMWbSeo",
@@ -825,7 +952,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "Nzx9T7GtmT4",
@@ -855,6 +988,12 @@
           "timestamp": "8:20",
           "message": "“Default APN Supported IP Versions” should be set to “IPv4”."
         }
+      ],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
       ]
     },
     {
@@ -879,7 +1018,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "LkGecksq8Qc",
@@ -915,7 +1060,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "GGpCAhA2wQQ",
@@ -936,7 +1087,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "lWuVErrkbAE",
@@ -972,7 +1129,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "mVMGiMFGgsU",
@@ -996,7 +1159,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "sdohcouTUhQ",
@@ -1018,7 +1187,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "m1R9lKa3ELk",
@@ -1038,7 +1213,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "mE8fL5Fu8x8",
@@ -1064,7 +1245,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "HjDX1j0ADfQ",
@@ -1079,7 +1266,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "l9kSZuqcqN4",
@@ -1094,7 +1287,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "Smbd17quDhw",
@@ -1109,7 +1308,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "C_V9blT3q38",
@@ -1140,7 +1345,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "22nh6BxfrZI",
@@ -1164,7 +1375,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "m6S-vjU6E1s",
@@ -1188,7 +1405,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "vlY_ud4unMw",
@@ -1208,7 +1431,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "QaG3pqSo8lY",
@@ -1234,7 +1463,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "eGyFkLB9HJ8",
@@ -1249,7 +1484,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "d_M18sq0TIQ",
@@ -1269,7 +1510,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "b9aMJZjZ4pw",
@@ -1289,7 +1536,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "MxULcUA4B5U",
@@ -1321,7 +1574,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "3zCaP-saTcU",
@@ -1349,7 +1608,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "EiDtomF41qY",
@@ -1369,7 +1634,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "nK76EKvburA",
@@ -1389,7 +1660,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "TAPYn6FC5t8",
@@ -1417,7 +1694,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "kdaGgEd9L9Q",
@@ -1467,7 +1750,13 @@
           ]
         }
       ],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "X29yLK8bRzg",
@@ -1486,7 +1775,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "ASXANpr_zX8",
@@ -1513,7 +1808,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "uYoJ7U0OMCY",
@@ -1545,7 +1846,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "Upib_vq_EB8",
@@ -1571,7 +1878,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "7nu04NBH2Qc",
@@ -1603,7 +1916,13 @@
       ],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "VZlzPKJP4TQ",
@@ -1618,7 +1937,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "IUZt0GjwYLI",
@@ -1633,7 +1958,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "eu3iP1njMRI",
@@ -1677,7 +2008,13 @@
         },
         "amazon.samsungBar"
       ],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "Bpc3EEQ-GoA",
@@ -1692,7 +2029,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremeProSdCard"],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "NH4DdXC0RFw",
@@ -1721,6 +2064,12 @@
           "timestamp": "6:40",
           "message": "“Only in Private Windows” should be set to “In all windows”."
         }
+      ],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
       ]
     },
     {
@@ -1736,7 +2085,13 @@
       "links": [],
       "credits": [],
       "affiliateLinks": [],
-      "footnotes": []
+      "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ]
     },
     {
       "id": "brGLX_92F5o",
@@ -1752,6 +2107,12 @@
       "credits": [],
       "affiliateLinks": [],
       "footnotes": [],
+      "support": [
+        {
+          "label": "Support the privacy guides",
+          "url": "https://sunknudsen.com/donate"
+        }
+      ],
       "thumbnailHash": "29fad42f3dbfe51bb33be466b290a79bb20f6b8f639cfdb2933f138db5f77c43"
     }
   ]

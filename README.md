@@ -56,6 +56,12 @@ Notice how suggested video links are platform-specific?
       "timestamp": "",
       "message": "The reference material has been updated so what you see in this episode might differ."
     }
+  ],
+  "support": [
+    {
+      "label": "Support the privacy guides",
+      "url": "https://sunknudsen.com/donate"
+    }
   ]
 }
 ```
@@ -101,6 +107,11 @@ Canada 👉 https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20
 CHANGE LOG
 ==============================
 The reference material has been updated so what you see in this episode might differ.
+
+==============================
+SUPPORT
+==============================
+Support the privacy guides 👉 https://sunknudsen.com/donate
 ```
 
 **PeerTube**
@@ -144,6 +155,11 @@ Canada 👉 https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20
 CHANGE LOG
 ==============================
 The reference material has been updated so what you see in this episode might differ.
+
+==============================
+SUPPORT
+==============================
+Support the privacy guides 👉 https://sunknudsen.com/donate
 ```
 
 ## Installation
@@ -220,7 +236,7 @@ Commands:
 1. Initialize dataset using `tube-manager initialize`
 2. Upload video to YouTube as usual using [YouTube Studio](https://studio.youtube.com/)
 3. Import video to dataset using `tube-manager import <id>`
-4. Edit title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks** and **footnotes** (see [tube-manager.schema.json](./tube-manager.schema.json))
+4. Edit title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks**, **footnotes** and **support** (see [tube-manager.schema.json](./tube-manager.schema.json))
 5. Add thumbnail to thumbnail directory (see [sample](./samples/tube-manager) and `tube-manager publish --help`)
 6. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
 
