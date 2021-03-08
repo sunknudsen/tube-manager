@@ -236,7 +236,7 @@ Commands:
 1. Initialize dataset using `tube-manager initialize`
 2. Upload video to YouTube as usual using [YouTube Studio](https://studio.youtube.com/)
 3. Import video to dataset using `tube-manager import <id>`
-4. Edit title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks**, **footnotes** and **support** (see [tube-manager.schema.json](./tube-manager.schema.json))
+4. Edit title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks**, **footnotes** and **support** (see [tube-manager.schema.json](./schemas/tube-manager.schema.json))
 5. Add thumbnail to thumbnail directory (see [sample](./samples/tube-manager) and `tube-manager publish --help`)
 6. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
 
