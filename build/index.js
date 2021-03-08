@@ -434,6 +434,7 @@ commander_1.default
             credits: [],
             affiliateLinks: [],
             footnotes: [],
+            support: [],
         });
         dataset.videos.sort(function (a, b) {
             const dateA = new Date(a.publishedAt);
@@ -469,6 +470,18 @@ const getPeerTubeVideo = function (dataset, id) {
 };
 const heading = function (value) {
     return `\n\n==============================\n${value.toUpperCase()}\n==============================`;
+};
+const support = function (dataset, video) {
+    let content = "";
+    video.support.forEach(function (means) {
+        if (typeof means === "string") {
+            content += `\n${means}`;
+        }
+        else {
+            content += `\n${means.label} ${dataset.separator} ${means.url}`;
+        }
+    });
+    return content;
 };
 const description = function (config, dataset, platform, video) {
     let content = video.description;
@@ -608,6 +621,10 @@ const description = function (config, dataset, platform, video) {
             }
         });
     }
+    if (video.support.length > 0) {
+        content += heading(dataset.headings.support);
+        content += support(dataset, video);
+    }
     return content;
 };
 const preview = function (config, dataset, platform, video, metadata) {
@@ -716,6 +733,7 @@ const publishVideo = async function (config, youtube, peertube, dataset, thumbna
             form.append("name", video.title);
             form.append("description", description(config, dataset, "peertube", video));
             form.append("privacy", getPrivacy(privacyStatus));
+            form.append("support", support(dataset, video));
             video.tags.slice(0, 5).forEach(function (tag, index) {
                 form.append(`tags[${index}]`, tag);
             });
@@ -774,6 +792,7 @@ const publishVideo = async function (config, youtube, peertube, dataset, thumbna
                     form.append("name", video.title);
                     form.append("description", description(config, dataset, "peertube", video));
                     form.append("privacy", getPrivacy(privacyStatus));
+                    form.append("support", support(dataset, video));
                     video.tags.slice(0, 5).forEach(function (tag, index) {
                         form.append(`tags[${index}]`, tag);
                     });

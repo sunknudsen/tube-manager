@@ -86,6 +86,10 @@
         "footnotes": {
           "description": "Footnotes title",
           "type": "string"
+        },
+        "support": {
+          "description": "Support title",
+          "type": "string"
         }
       },
       "required": [
@@ -268,6 +272,22 @@
                   },
                   "required": ["type", "timestamp", "message"],
                   "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "support": {
+            "description": "Support",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "description": "Channel",
+                  "type": "string"
+                },
+                {
+                  "description": "Channel with label",
+                  "$ref": "#/definitions/labelAndUrl"
                 }
               ]
             }
