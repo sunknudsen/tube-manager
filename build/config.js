@@ -1,14 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const util_1 = require("util");
-const fs_1 = require("fs");
-const prettier_1 = __importDefault(require("prettier"));
-const readFileAsync = util_1.promisify(fs_1.readFile);
-const writeFileAsync = util_1.promisify(fs_1.writeFile);
-class Config {
+import { promisify } from "util";
+import { readFile, writeFile } from "fs";
+import prettier from "prettier";
+const readFileAsync = promisify(readFile);
+const writeFileAsync = promisify(writeFile);
+export default class Config {
     constructor(path, profile) {
         this.path = path;
         this.profile = profile;
@@ -29,10 +25,9 @@ class Config {
         return this;
     }
     async save() {
-        await writeFileAsync(this.path, prettier_1.default.format(JSON.stringify(this.profiles, null, 2), {
+        await writeFileAsync(this.path, prettier.format(JSON.stringify(this.profiles, null, 2), {
             parser: "json",
         }));
     }
 }
-exports.default = Config;
 //# sourceMappingURL=config.js.map

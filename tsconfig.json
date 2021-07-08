@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "module": "commonjs",
-    "resolveJsonModule": true,
     "esModuleInterop": true,
-    "target": "es2017",
-    "noImplicitAny": true,
+    "module": "ES2020",
     "moduleResolution": "node",
-    "sourceMap": true,
+    "noImplicitAny": true,
     "outDir": "build",
-    "rootDir": "src"
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "sourceMap": true,
+    "target": "es2017"
   },
   "include": ["./src/**/*"]
 }

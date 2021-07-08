@@ -1,15 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const inquirer_1 = __importDefault(require("inquirer"));
-const got_1 = __importDefault(require("got"));
-const chalk_1 = __importDefault(require("chalk"));
-class PeerTube {
+import inquirer from "inquirer";
+import got from "got";
+import chalk from "chalk";
+export default class PeerTube {
     constructor(config) {
         this.config = config;
-        this.got = got_1.default.extend({
+        this.got = got.extend({
             mutableDefaults: true,
             prefixUrl: this.config.props.peertube.apiPrefixUrl,
             headers: {
@@ -28,7 +24,7 @@ class PeerTube {
                                     authorization: `Bearer ${accessToken}`,
                                 },
                             };
-                            this.got.defaults.options = got_1.default.mergeOptions(this.got.defaults.options, updatedOptions);
+                            this.got.defaults.options = got.mergeOptions(this.got.defaults.options, updatedOptions);
                             return retryWithMergedOptions(updatedOptions);
                         }
                         return response;
@@ -42,7 +38,7 @@ class PeerTube {
     }
     async getRefreshToken() {
         try {
-            const values = await inquirer_1.default.prompt([
+            const values = await inquirer.prompt([
                 {
                     name: "username",
                     message: "Please enter PeerTube username and press enter",
@@ -79,7 +75,7 @@ class PeerTube {
         try {
             let refreshToken = this.config.props.peertube.refreshToken;
             if (refreshToken === "") {
-                const values = await inquirer_1.default.prompt({
+                const values = await inquirer.prompt({
                     type: "password",
                     name: "refreshToken",
                     message: "Please paste PeerTube refresh token here and press enter",
@@ -115,7 +111,7 @@ class PeerTube {
                     },
                 })
                     .save();
-                console.info(`PeerTube refresh token has changed to ${chalk_1.default.bold(response.body.refresh_token)}`);
+                console.info(`PeerTube refresh token has changed to ${chalk.bold(response.body.refresh_token)}`);
             }
             return response.body.access_token;
         }
@@ -124,5 +120,4 @@ class PeerTube {
         }
     }
 }
-exports.default = PeerTube;
 //# sourceMappingURL=peertube.js.map

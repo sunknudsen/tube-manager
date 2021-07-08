@@ -1,16 +1,9 @@
 "use strict"
 
-import program from "commander"
+import { program } from "commander"
 import pWhilst from "p-whilst"
 import { join, resolve } from "path"
-import {
-  createReadStream,
-  existsSync,
-  readFile,
-  writeFile,
-  emptyDir,
-  ensureDir,
-} from "fs-extra"
+import fsExtra from "fs-extra"
 import inquirer from "inquirer"
 import hasha from "hasha"
 import leven from "leven"
@@ -20,9 +13,18 @@ import prettier from "prettier"
 import formData from "form-data"
 import { homedir } from "os"
 import { HTTPError } from "got"
-import Config from "./config"
-import YouTube from "./youtube"
-import PeerTube from "./peertube"
+import Config from "./config.js"
+import YouTube from "./youtube.js"
+import PeerTube from "./peertube.js"
+
+const {
+  createReadStream,
+  existsSync,
+  readFile,
+  writeFile,
+  emptyDir,
+  ensureDir,
+} = fsExtra
 
 const logError = function (error: Error | HTTPError) {
   if (error instanceof HTTPError) {
