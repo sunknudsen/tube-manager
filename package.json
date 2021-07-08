@@ -1,6 +1,6 @@
 {
   "name": "tube-manager",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Manage YouTube (and syndicated PeerTube) videos using command line.",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"

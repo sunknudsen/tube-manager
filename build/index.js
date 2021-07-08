@@ -782,8 +782,9 @@ const publishVideo = async function (config, youtube, peertube, dataset, thumbna
                 throw new Error("Could not find video");
             }
             const processingDetails = videosResponse.body.items[0].processingDetails;
-            if (["succeeded", "terminated"].includes(processingDetails.processingStatus) === false ||
-                processingDetails.thumbnailsAvailability !== "available") {
+            if (options.youtubeCheck === true &&
+                (["succeeded", "terminated"].includes(processingDetails.processingStatus) === false ||
+                    processingDetails.thumbnailsAvailability !== "available")) {
                 console.info(chalk.yellow("Video not processed, try again in a few minutes"));
             }
             else {
@@ -839,6 +840,7 @@ program
     .option("--thumbnail-dir <dir>", "/path/to/tube-manager", resolve(process.cwd(), "tube-manager"))
     .option("--public", "make video(s) public")
     .option("--no-publish-related", "do not publish related video(s)")
+    .option("--no-youtube-check", "publish video to PeerTube even when reported as not processed by YouTube")
     .action(async (id, command) => {
     try {
         const config = new Config(command.config, command.profile);
@@ -851,6 +853,7 @@ program
         const options = {
             public: command.public,
             publishRelated: command.publishRelated,
+            youtubeCheck: command.youtubeCheck,
         };
         if (!id) {
             const values = await inquirer.prompt({
