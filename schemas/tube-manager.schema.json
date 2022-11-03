@@ -132,10 +132,6 @@
             "description": "ID",
             "type": "string"
           },
-          "peerTubeUuid": {
-            "description": "PeerTube UUID",
-            "type": ["null", "string"]
-          },
           "publishedAt": {
             "description": "Published at",
             "type": "string"
@@ -299,7 +295,6 @@
         },
         "required": [
           "id",
-          "peerTubeUuid",
           "publishedAt",
           "title",
           "description",

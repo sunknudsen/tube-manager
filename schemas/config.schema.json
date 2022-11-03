@@ -9,55 +9,6 @@
       "description": "Profile",
       "type": "object",
       "properties": {
-        "peertube": {
-          "description": "YouTube",
-          "type": "object",
-          "properties": {
-            "apiPrefixUrl": {
-              "description": "API prefix URL",
-              "type": "string"
-            },
-            "clientId": {
-              "description": "Client ID",
-              "type": "string"
-            },
-            "clientSecret": {
-              "description": "Client secret",
-              "type": "string"
-            },
-            "accessToken": {
-              "description": "Access token",
-              "type": "string"
-            },
-            "refreshToken": {
-              "description": "Refresh token",
-              "type": "string"
-            },
-            "accountName": {
-              "description": "Account name",
-              "type": "string"
-            },
-            "channelId": {
-              "description": "Channel ID",
-              "type": "string"
-            },
-            "channelWatchUrl": {
-              "description": "Channel watch URL",
-              "type": "string"
-            }
-          },
-          "required": [
-            "apiPrefixUrl",
-            "clientId",
-            "clientSecret",
-            "accessToken",
-            "refreshToken",
-            "accountName",
-            "channelId",
-            "channelWatchUrl"
-          ],
-          "additionalProperties": false
-        },
         "youtube": {
           "description": "YouTube",
           "type": "object",
@@ -111,7 +62,7 @@
           "additionalProperties": false
         }
       },
-      "required": ["youtube", "peertube"],
+      "required": ["youtube"],
       "additionalProperties": false
     }
   },

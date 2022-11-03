@@ -1,5 +1,3 @@
-"use strict"
-
 import { promisify } from "util"
 import { readFile, writeFile } from "fs"
 import prettier from "prettier"
@@ -15,16 +13,6 @@ interface Props {
     clientSecret: string
     accessToken: string
     refreshToken: string
-    channelId: string
-    channelWatchUrl: string
-  }
-  peertube: {
-    apiPrefixUrl: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
-    accountName: string
     channelId: string
     channelWatchUrl: string
   }
@@ -53,7 +41,7 @@ export default class Config {
     this.props = this.profiles[this.profile]
   }
   set(props: DeepPartial<Props>) {
-    // This doesn't support nested platform properties
+    // This doesn’t support nested platform properties
     Object.keys(this.props).forEach((platform: keyof Props) => {
       const platformProps = this.props[platform]
       if (props[platform]) {

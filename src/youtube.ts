@@ -1,10 +1,8 @@
-"use strict"
-
 import open from "open"
 import inquirer from "inquirer"
 import queryString from "query-string"
 import got, { Got } from "got"
-import Config from "./config"
+import Config from "./config.js"
 
 export default class YouTube {
   readonly config: Config
@@ -31,10 +29,7 @@ export default class YouTube {
                   authorization: `Bearer ${accessToken}`,
                 },
               }
-              this.got.defaults.options = got.mergeOptions(
-                this.got.defaults.options,
-                updatedOptions
-              )
+              this.got.defaults.options.merge(updatedOptions)
               return retryWithMergedOptions(updatedOptions)
             }
             return response

@@ -1,39 +1,28 @@
-"use strict"
-
 import { program } from "commander"
 import pWhilst from "p-whilst"
 import { join, resolve } from "path"
 import fsExtra from "fs-extra"
 import inquirer from "inquirer"
 import hasha from "hasha"
-import leven from "leven"
 import { inspect } from "util"
 import chalk from "chalk"
 import prettier from "prettier"
-import formData from "form-data"
 import { homedir } from "os"
 import { HTTPError } from "got"
 import Config from "./config.js"
 import YouTube from "./youtube.js"
-import PeerTube from "./peertube.js"
 
-const {
-  createReadStream,
-  existsSync,
-  readFile,
-  writeFile,
-  emptyDir,
-  ensureDir,
-} = fsExtra
+const { existsSync, readFile, writeFile, emptyDir, ensureDir } = fsExtra
 
 const logError = function (error: Error | HTTPError) {
   if (error instanceof HTTPError) {
+    const url = error.response.request.options.url
     console.error(
       inspect(
         {
           request: {
             method: error.response.request.options.method,
-            url: error.response.request.options.url.href,
+            url: typeof url === "object" ? url.href : url,
             headers: error.response.request.options.headers,
             json: error.response.request.options.json,
             body: error.response.request.options.body,
@@ -44,7 +33,7 @@ const logError = function (error: Error | HTTPError) {
           },
         },
         false,
-        4,
+        10,
         true
       )
     )
@@ -55,7 +44,7 @@ const logError = function (error: Error | HTTPError) {
 
 type Section = {
   label: string
-  timestamp: number
+  timestamp: string
 }
 
 type Snippet =
@@ -72,15 +61,16 @@ type AffiliateSnippet =
       url: Snippet[]
     }
 
-type Footnote = {
-  type: "" | "warning"
-  timestamp: string
-  message: string
-}
+type Footnote =
+  | string
+  | {
+      type: string
+      timestamp: string
+      message: string
+    }
 
-interface Video {
+export interface Video {
   id: string
-  peerTubeUuid: string
   publishedAt: string
   title: string
   description: string
@@ -96,7 +86,7 @@ interface Video {
   thumbnailHash?: string
 }
 
-interface Dataset {
+export interface Dataset {
   headings: {
     sections: string
     suggestedVideos: string
@@ -126,18 +116,14 @@ program
   .option("--profile <profile>", "configuration profile", "default")
   .action(async (platform, command) => {
     try {
-      if (!["youtube", "peertube"].includes(platform)) {
+      if (!["youtube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         let refreshToken = await youtube.getRefreshToken()
-        console.info(refreshToken)
-      } else if (platform === "peertube") {
-        let refreshToken = await peertube.getRefreshToken()
         console.info(refreshToken)
       }
     } catch (error) {
@@ -156,13 +142,12 @@ program
   .option("--profile <profile>", "configuration profile", "default")
   .action(async (platform, command) => {
     try {
-      if (!["youtube", "peertube"].includes(platform)) {
+      if (!["youtube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/channels/list
         const channelsResponse: any = await youtube.got.get("channels", {
@@ -177,18 +162,6 @@ program
             id: item.id,
             title: item.snippet.title,
             description: item.snippet.description,
-          })
-        })
-        console.info(channels)
-      } else if (platform === "peertube") {
-        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/My-User/paths/~1users~1me/get
-        const meResponse: any = await peertube.got.get(`users/me`)
-        let channels: any[] = []
-        meResponse.body.videoChannels.forEach(function (videoChannel: any) {
-          channels.push({
-            id: videoChannel.id,
-            name: videoChannel.name,
-            description: videoChannel.description,
           })
         })
         console.info(channels)
@@ -209,13 +182,12 @@ program
   .option("--profile <profile>", "configuration profile", "default")
   .action(async (platform, command) => {
     try {
-      if (!["youtube", "peertube"].includes(platform)) {
+      if (!["youtube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/channels/list
         const channelsResponse: any = await youtube.got.get("channels", {
@@ -234,22 +206,6 @@ program
           viewCount: statistics.viewCount,
           subscriberCount: statistics.subscriberCount,
         })
-      } else if (platform === "peertube") {
-        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/My-User/paths/~1users~1me/get
-        const meResponse: any = await peertube.got.get(`users/me`)
-        let stats: any = {
-          account: {
-            followersCount: meResponse.body.account.followersCount,
-          },
-          videoChannels: [],
-        }
-        meResponse.body.videoChannels.forEach(function (videoChannel: any) {
-          stats.videoChannels.push({
-            displayName: videoChannel.displayName,
-            followersCount: videoChannel.followersCount,
-          })
-        })
-        console.info(stats)
       }
     } catch (error) {
       logError(error)
@@ -267,13 +223,12 @@ program
   .option("--profile <profile>", "configuration profile", "default")
   .action(async (platform, id, command) => {
     try {
-      if (!["youtube", "peertube"].includes(platform)) {
+      if (!["youtube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       if (platform === "youtube") {
         // See https://developers.google.com/youtube/v3/docs/videos/list
         const videosResponse: any = await youtube.got.get("videos", {
@@ -286,56 +241,11 @@ program
           throw new Error("Could not find video")
         }
         console.info(inspect(videosResponse.body.items[0], false, 3, true))
-      } else if (platform === "peertube") {
-        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
-        const videosResponse: any = await peertube.got.get(`videos/${id}`)
-        console.info(inspect(videosResponse.body, false, 5, true))
       }
     } catch (error) {
       logError(error)
     }
   })
-
-const getPeerTubeVideosFromServer = async function (
-  config: Config,
-  peertube: PeerTube
-) {
-  let peertubeVideos: any[] = []
-  if (config.props.peertube.accountName) {
-    let start = 0
-    let total: null | number = null
-    await pWhilst(
-      () => total === null || peertubeVideos.length < total,
-      async () => {
-        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos/get
-        const accountVideosResponse: any = await peertube.got.get(
-          `accounts/${peertube.config.props.peertube.accountName}/videos`,
-          {
-            searchParams: {
-              count: 50,
-              start: start,
-            },
-          }
-        )
-        peertubeVideos = peertubeVideos.concat(accountVideosResponse.body.data)
-        total = accountVideosResponse.body.total
-        start = peertubeVideos.length
-      }
-    )
-  }
-  return peertubeVideos
-}
-
-const getPeerTubeVideoMatchingTitle = function (
-  peertubeVideos: any[],
-  title: string
-): any {
-  for (const peertubeVideo of peertubeVideos) {
-    if (leven(title, peertubeVideo.name) < 2) {
-      return peertubeVideo
-    }
-  }
-}
 
 program
   .command("initialize")
@@ -363,7 +273,6 @@ program
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       if (existsSync(command.dataset)) {
         const values = await inquirer.prompt({
           type: "confirm",
@@ -455,10 +364,6 @@ program
         })
         youtubeVideos = youtubeVideos.concat(videosResponse.body.items)
       }
-      let peertubeVideos: any[] = []
-      if (peertube.config.props.peertube.accountName) {
-        peertubeVideos = await getPeerTubeVideosFromServer(config, peertube)
-      }
       let headings: Dataset["headings"] = {
         sections: "Sections",
         suggestedVideos: "Suggested",
@@ -477,25 +382,8 @@ program
         videos: [],
       }
       for (const youtubeVideo of youtubeVideos) {
-        let peerTubeVideo: any
-        if (peertube.config.props.peertube.accountName) {
-          peerTubeVideo = getPeerTubeVideoMatchingTitle(
-            peertubeVideos,
-            youtubeVideo.snippet.title
-          )
-          if (!peerTubeVideo) {
-            console.info(
-              chalk.yellow(
-                `Could not find PeerTube video matching title ${chalk.bold(
-                  youtubeVideo.snippet.title
-                )}`
-              )
-            )
-          }
-        }
         let video: Video = {
           id: youtubeVideo.id,
-          peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
           publishedAt: youtubeVideo.snippet.publishedAt,
           title: youtubeVideo.snippet.title,
           description: youtubeVideo.snippet.description ?? "",
@@ -546,7 +434,6 @@ program
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       const json = await readFile(command.dataset, "utf8")
       const dataset: Dataset = JSON.parse(json)
       if (getYouTubeVideo(dataset, id)) {
@@ -563,29 +450,8 @@ program
         throw new Error("Could not find video")
       }
       const video = videosResponse.body.items[0]
-      let peerTubeVideo: any
-      if (peertube.config.props.peertube.accountName) {
-        const peertubeVideos = await getPeerTubeVideosFromServer(
-          config,
-          peertube
-        )
-        peerTubeVideo = getPeerTubeVideoMatchingTitle(
-          peertubeVideos,
-          video.snippet.title
-        )
-        if (!peerTubeVideo) {
-          console.info(
-            chalk.yellow(
-              `Could not find PeerTube video matching title ${chalk.bold(
-                video.snippet.title
-              )}`
-            )
-          )
-        }
-      }
       dataset.videos.push({
         id: video.id,
-        peerTubeUuid: peerTubeVideo ? peerTubeVideo.uuid : null,
         publishedAt: video.snippet.publishedAt,
         title: video.snippet.title,
         description: video.snippet.description,
@@ -625,14 +491,6 @@ program
 const getYouTubeVideo = function (dataset: Dataset, id: string): Video {
   for (const video of dataset.videos) {
     if (video.id === id) {
-      return video
-    }
-  }
-}
-
-const getPeerTubeVideo = function (dataset: Dataset, id: string): Video {
-  for (const video of dataset.videos) {
-    if (video.peerTubeUuid === id) {
       return video
     }
   }
@@ -684,21 +542,6 @@ const description = function (
         }
         if (platform === "youtube") {
           content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${config.props.youtube.channelWatchUrl}${suggestedVideoAttributes.id}`
-        } else if (platform === "peertube") {
-          let watchUrl: string
-          if (suggestedVideoAttributes.peerTubeUuid === null) {
-            console.info(
-              chalk.red(
-                `Could not find PeerTube version of suggested video ${chalk.bold(
-                  suggestedVideo
-                )} (using YouTube version)`
-              )
-            )
-            watchUrl = `${config.props.youtube.channelWatchUrl}${suggestedVideoAttributes.id}`
-          } else {
-            watchUrl = `${config.props.peertube.channelWatchUrl}${suggestedVideoAttributes.peerTubeUuid}`
-          }
-          content += `\n${suggestedVideoAttributes.title} ${dataset.separator} ${watchUrl}`
         }
       } else if (typeof suggestedVideo === "string") {
         content += `\n${suggestedVideo}`
@@ -835,7 +678,7 @@ program
   .option("--metadata", "enabled metadata preview")
   .action(async (platform, id, command) => {
     try {
-      if (!["youtube", "peertube"].includes(platform)) {
+      if (!["youtube"].includes(platform)) {
         throw new Error(`Invalid platform "${platform}"`)
       }
       const config = new Config(command.config, command.profile)
@@ -845,8 +688,6 @@ program
       let video
       if (platform === "youtube") {
         video = getYouTubeVideo(dataset, id)
-      } else if (platform === "peertube") {
-        video = getPeerTubeVideo(dataset, id)
       }
       if (!video) {
         throw new Error("Could not find video")
@@ -872,7 +713,6 @@ interface PublishOptions {
 const publishVideo = async function (
   config: Config,
   youtube: YouTube,
-  peertube: PeerTube,
   dataset: Dataset,
   thumbnailDir: string,
   video: Video,
@@ -930,150 +770,6 @@ const publishVideo = async function (
       )}`
     )
   )
-  const privacyStatus = videosResponse.body.status.privacyStatus
-  const getPrivacy = function (
-    privacyStatus: "private" | "public" | "unlisted"
-  ) {
-    // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/get
-    if (privacyStatus === "public") {
-      return 1
-    } else if (privacyStatus === "unlisted") {
-      return 2
-    } else if (privacyStatus === "private") {
-      return 3
-    } else {
-      throw new Error(`Invalid privacy status "${privacyStatus}"`)
-    }
-  }
-  if (video.peerTubeUuid !== null) {
-    const genForm = async () => {
-      const form = new formData()
-      form.append("name", video.title)
-      form.append(
-        "description",
-        description(config, dataset, "peertube", video)
-      )
-      form.append("privacy", getPrivacy(privacyStatus))
-      form.append("support", support(dataset, video))
-      video.tags.slice(0, 5).forEach(function (tag, index) {
-        form.append(`tags[${index}]`, tag)
-      })
-      // Upload thumbnail to PeerTube (if present or has changed)
-      if (updatedThumbnailHash) {
-        form.append("previewfile", createReadStream(thumbnail))
-        form.append("thumbnailfile", createReadStream(thumbnail))
-      }
-      return form
-    }
-    const form = await genForm()
-    // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1{id}/put
-    await peertube.got.put(`videos/${video.peerTubeUuid}`, {
-      headers: form.getHeaders(),
-      body: form,
-      hooks: {
-        beforeRetry: [
-          async (options) => {
-            const form = await genForm()
-            options.body = form
-            options.headers[
-              "content-type"
-            ] = `multipart/form-data; boundary=${form.getBoundary()}`
-          },
-        ],
-      },
-    })
-    console.info(
-      chalk.green(
-        `Published video to ${chalk.bold(
-          `${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
-        )}`
-      )
-    )
-  } else if (
-    peertube.config.props.peertube.accountName &&
-    video.peerTubeUuid === null
-  ) {
-    const values = await inquirer.prompt({
-      type: "confirm",
-      name: "confirmation",
-      message: "Do you wish to publish video to PeerTube?",
-    })
-    if (values.confirmation === true) {
-      // Make sure YouTube video has been processed
-      // See https://developers.google.com/youtube/v3/docs/channels/list
-      const videosResponse: any = await youtube.got.get("videos", {
-        searchParams: {
-          id: video.id,
-          part: "id,processingDetails",
-        },
-      })
-      if (videosResponse.body.items.length !== 1) {
-        throw new Error("Could not find video")
-      }
-      const processingDetails = videosResponse.body.items[0].processingDetails
-      if (
-        options.youtubeCheck === true &&
-        (["succeeded", "terminated"].includes(
-          processingDetails.processingStatus
-        ) === false ||
-          processingDetails.thumbnailsAvailability !== "available")
-      ) {
-        console.info(
-          chalk.yellow("Video not processed, try again in a few minutes")
-        )
-      } else {
-        const genForm = async () => {
-          const form = new formData()
-          form.append("channelId", config.props.peertube.channelId)
-          form.append("name", video.title)
-          form.append(
-            "description",
-            description(config, dataset, "peertube", video)
-          )
-          form.append("privacy", getPrivacy(privacyStatus))
-          form.append("support", support(dataset, video))
-          video.tags.slice(0, 5).forEach(function (tag, index) {
-            form.append(`tags[${index}]`, tag)
-          })
-          form.append(
-            "targetUrl",
-            `${config.props.youtube.channelWatchUrl}${video.id}`
-          )
-          // Upload thumbnail to PeerTube (if present or has changed)
-          if (updatedThumbnailHash) {
-            form.append("previewfile", createReadStream(thumbnail))
-            form.append("thumbnailfile", await readFile(thumbnail))
-          }
-          return form
-        }
-        const form = await genForm()
-        // See https://docs.joinpeertube.org/api-rest-reference.html#tag/Video/paths/~1videos~1imports/post
-        const videosResponse: any = await peertube.got.post(`videos/imports`, {
-          headers: form.getHeaders(),
-          body: form,
-          hooks: {
-            beforeRetry: [
-              async (options) => {
-                const form = await genForm()
-                options.body = form
-                options.headers[
-                  "content-type"
-                ] = `multipart/form-data; boundary=${form.getBoundary()}`
-              },
-            ],
-          },
-        })
-        video.peerTubeUuid = videosResponse.body.video.uuid
-        console.info(
-          chalk.green(
-            `Published video to ${chalk.bold(
-              `${config.props.peertube.channelWatchUrl}${video.peerTubeUuid}`
-            )}`
-          )
-        )
-      }
-    }
-  }
   // Save thumbnail hash to dataset (if present or has changed)
   if (updatedThumbnailHash) {
     video.thumbnailHash = updatedThumbnailHash
@@ -1101,16 +797,11 @@ program
   )
   .option("--public", "make video(s) public")
   .option("--no-publish-related", "do not publish related video(s)")
-  .option(
-    "--no-youtube-check",
-    "publish video to PeerTube even when reported as not processed by YouTube"
-  )
   .action(async (id, command) => {
     try {
       const config = new Config(command.config, command.profile)
       await config.load()
       const youtube = new YouTube(config)
-      const peertube = new PeerTube(config)
       const json = await readFile(command.dataset, "utf8")
       const dataset: Dataset = JSON.parse(json)
       const thumbnailDir = command.thumbnailDir
@@ -1133,7 +824,6 @@ program
           await publishVideo(
             config,
             youtube,
-            peertube,
             dataset,
             thumbnailDir,
             video,
@@ -1148,7 +838,6 @@ program
         await publishVideo(
           config,
           youtube,
-          peertube,
           dataset,
           thumbnailDir,
           video,
@@ -1177,7 +866,6 @@ program
               await publishVideo(
                 config,
                 youtube,
-                peertube,
                 dataset,
                 thumbnailDir,
                 video,

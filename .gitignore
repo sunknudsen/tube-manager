@@ -12,5 +12,4 @@ npm-debug.log
 .env
 
 # Developement files
-./tube-manager
-./tube-manager.json
+build/

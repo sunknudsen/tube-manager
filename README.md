@@ -1,8 +1,8 @@
 # tube-manager
 
-## Manage YouTube (and syndicated PeerTube) videos using command line.
+## Manage YouTube videos using command line.
 
-This project was developed to streamline the process of managing YouTube (and syndicated PeerTube) titles, descriptions and tags.
+This project was developed to streamline the process of managing YouTube titles, descriptions and tags.
 
 ## I can do this by hand, why would I use tube-manager?
 
@@ -10,156 +10,73 @@ Because managing this by hand as a channel grows becomes exponentially overwhelm
 
 Not mentioning associated video links need to be platform-specific and having all this in one place is amazing (and Git friendly).
 
-For example, here’s how the following data from dataset (see [sample](./samples/tube-manager.json)) is transpiled for YouTube and PeerTube.
+For example, here’s how the following data from dataset (see [sample](./samples/tube-manager.json)) is transpiled for YouTube.
 
 Notice how suggested video and affiliate links are automatically expanded?
-
-Notice how suggested video links are platform-specific?
 
 **Data**
 
 ```json
 {
-  "id": "1cz_ViFB6eE",
-  "peerTubeUuid": "4b868b2f-5cd3-4a55-9b31-35de881a2b29",
-  "publishedAt": "2020-08-28T13:07:18Z",
-  "title": "How to backup and encrypt data using rsync and VeraCrypt on macOS (see change log)",
-  "description": "This is the 36th episode of the privacy guides series.\n\nIn this episode, we explore how to backup and encrypt data using rsync and VeraCrypt on macOS.",
-  "tags": ["Privacy", "Security", "Backups", "VeraCrypt", "rsync", "macOS"],
+  "id": "YrUSJQq8WOA",
+  "publishedAt": "2022-11-03T14:43:45Z",
+  "title": "macOS stores a copy of everything one prints forever",
+  "description": "In this episode, we explore how macOS stores a copy of everything one prints forever.",
+  "tags": ["Privacy", "Security", "macOS"],
   "categoryId": "27",
-  "sections": [
-    {
-      "timestamp": "0:00",
-      "label": "Intro"
-    },
-    {
-      "timestamp": "4:44",
-      "label": "Guide"
-    }
-  ],
-  "suggestedVideos": ["video.qPAOMczcuZw"],
+  "sections": [],
+  "suggestedVideos": [],
   "links": [
     {
-      "label": "Reference material",
-      "url": "https://sunknudsen.com/privacy-guides/how-to-backup-and-encrypt-data-using-rsync-and-veracrypt-on-macos"
+      "label": "How to disable CUPS pinter job history on macOS",
+      "url": "https://sunknudsen.com/privacy-guides/how-to-disable-cups-pinter-job-history-on-macos"
     },
     {
-      "label": "VeraCrypt",
-      "url": "https://www.veracrypt.fr/en/Home.html"
+      "label": "Twitter (please follow @superbacked)",
+      "url": "https://twitter.com/superbacked"
+    },
+    {
+      "label": "Superbacked (join waiting list)",
+      "url": "https://superbacked.com/"
     }
   ],
   "credits": [],
-  "affiliateLinks": ["amazon.samsungBar", "amazon.sandiskExtremePro"],
-  "footnotes": [
-    {
-      "type": "",
-      "timestamp": "",
-      "message": "The reference material has been updated so what you see in this episode might differ."
-    }
-  ],
+  "affiliateLinks": ["amazon.samsungBar"],
+  "footnotes": [],
   "support": [
     {
-      "label": "Support the privacy guides",
+      "label": "Support my research",
       "url": "https://sunknudsen.com/donate"
     }
-  ]
+  ],
+  "thumbnailHash": "65c65f74ac181dcffc994d9f75ed88392bdcc434165bc59dda2a0553a0725ac6"
 }
 ```
 
 **YouTube**
 
 ```
-This is the 36th episode of the privacy guides series.
+macOS stores a copy of everything one prints forever
 
-In this episode, we explore how to backup and encrypt data using rsync and VeraCrypt on macOS.
-
-==============================
-TL;DR
-==============================
-0:00 Intro
-4:44 Guide
-
-==============================
-SUGGESTED
-==============================
-More on rsync and VeraCrypt backups on macOS and introducing the privacy guides docs 👉 https://www.youtube.com/watch?v=qPAOMczcuZw
+In this episode, we explore how macOS stores a copy of everything one prints forever.
 
 ==============================
 LINKS
 ==============================
-Reference material 👉 https://sunknudsen.com/privacy-guides/how-to-backup-and-encrypt-data-using-rsync-and-veracrypt-on-macos
-VeraCrypt 👉 https://www.veracrypt.fr/en/Home.html
+How to disable CUPS pinter job history on macOS 👉 https://sunknudsen.com/privacy-guides/how-to-disable-cups-pinter-job-history-on-macos
+Twitter (please follow @superbacked) 👉 https://twitter.com/superbacked
+Superbacked (join waiting list) 👉 https://superbacked.com/
 
 ==============================
 AFFILIATE LINKS
 ==============================
-Samsung BAR Plus 32GB
-USA 👉 https://www.amazon.com/dp/B07BPHML28?tag=sunknudsen06-20
-UK 👉 https://www.amazon.co.uk/dp/B07D1JMX87?tag=sunknudsen-21
-Canada 👉 https://www.amazon.ca/dp/B07BPHML28?tag=sunknudsen02-20
-
-SanDisk Extreme Pro 32GB SDHC UHS-I card
-USA 👉 https://www.amazon.com/dp/B01J5RHBQ4?tag=sunknudsen06-20
-UK 👉 https://www.amazon.co.uk/dp/B01J5RHBQ4?tag=sunknudsen-21
-Canada 👉 https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20
-
-==============================
-CHANGE LOG
-==============================
-The reference material has been updated so what you see in this episode might differ.
+Samsung T7 Portable SSD 1TB
+USA 👉 https://www.amazon.com/dp/B087DFLF9S?tag=sunknudsen06-20
 
 ==============================
 SUPPORT
 ==============================
-Support the privacy guides 👉 https://sunknudsen.com/donate
-```
-
-**PeerTube**
-
-```
-This is the 36th episode of the privacy guides series.
-
-In this episode, we explore how to backup and encrypt data using rsync and VeraCrypt on macOS.
-
-==============================
-TL;DR
-==============================
-0:00 Intro
-4:44 Guide
-
-==============================
-SUGGESTED
-==============================
-More on rsync and VeraCrypt backups on macOS and introducing the privacy guides docs 👉 https://peertube.sunknudsen.com/videos/watch/614f53aa-3907-4e44-b200-a9111b164712
-
-==============================
-LINKS
-==============================
-Reference material 👉 https://sunknudsen.com/privacy-guides/how-to-backup-and-encrypt-data-using-rsync-and-veracrypt-on-macos
-VeraCrypt 👉 https://www.veracrypt.fr/en/Home.html
-
-==============================
-AFFILIATE LINKS
-==============================
-Samsung BAR Plus 32GB
-USA 👉 https://www.amazon.com/dp/B07BPHML28?tag=sunknudsen06-20
-UK 👉 https://www.amazon.co.uk/dp/B07D1JMX87?tag=sunknudsen-21
-Canada 👉 https://www.amazon.ca/dp/B07BPHML28?tag=sunknudsen02-20
-
-SanDisk Extreme Pro 32GB SDHC UHS-I card
-USA 👉 https://www.amazon.com/dp/B01J5RHBQ4?tag=sunknudsen06-20
-UK 👉 https://www.amazon.co.uk/dp/B01J5RHBQ4?tag=sunknudsen-21
-Canada 👉 https://www.amazon.ca/dp/B01J5RHBQ4?tag=sunknudsen02-20
-
-==============================
-CHANGE LOG
-==============================
-The reference material has been updated so what you see in this episode might differ.
-
-==============================
-SUPPORT
-==============================
-Support the privacy guides 👉 https://sunknudsen.com/donate
+Support my research 👉 https://sunknudsen.com/donate
 ```
 
 ## Installation
@@ -170,13 +87,7 @@ Support the privacy guides 👉 https://sunknudsen.com/donate
 
 This is where we get the values of `youtube.clientId` and `youtube.clientSecret`.
 
-### Step 3: go to https://peertube.sunknudsen.com/api/v1/oauth-clients/local
-
-> Heads up: replace `peertube.sunknudsen.com` by the hostname of your PeerTube instance.
-
-This is where we get the values of `peertube.clientId` and `peertube.clientSecret`.
-
-### Step 4: run following commands
+### Step 3: run following commands
 
 #### macOS
 
@@ -198,17 +109,13 @@ cp $(npm root -g)/tube-manager/config.json.sample ~/.tube-manager/config.json
 nano ~/.tube-manager/config.json
 ```
 
-### Step 5: edit `config.json`
+### Step 4: edit `config.json`
 
-> Heads up: for increased security, saving `youtube.refreshToken` and `peertube.refreshToken` is optional (when omitted, a prompt will ask for them at run time).
+> Heads up: for increased security, saving `youtube.refreshToken` is optional (when omitted, a prompt will ask for refresh token at run time).
 
 Once YouTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token youtube` to get values of `youtube.accessToken` and `youtube.refreshToken`.
 
-Once PeerTube client ID and secret are saved to `config.json`, run `tube-manager refresh-token peertube` to get values of `peertube.accessToken` and `peertube.refreshToken` environment variables.
-
-Once access and refresh tokens are saved to `config.json`, run `tube-manager channels youtube` to get value of `youtube.channelId` and `tube-manager channels peertube` to get value of `peertube.channelId`.
-
-`peertube.accountName` is your PeerTube username.
+Once access and refresh token are saved to `config.json`, run `tube-manager channels youtube` to get value of `youtube.channelId`.
 
 ## Usage
 
@@ -238,7 +145,7 @@ Commands:
 3. Import video to dataset using `tube-manager import <id>`
 4. Edit title, description, tags, **sections**, **suggestedVideos**, **links**, **credits**, **affiliateLinks**, **footnotes** and **support** (see [tube-manager.schema.json](./schemas/tube-manager.schema.json))
 5. Add thumbnail to thumbnail directory (see [sample](./samples/tube-manager) and `tube-manager publish --help`)
-6. Publish video to YouTube and PeerTube using `tube-manager publish <id>`
+6. Publish video to YouTube using `tube-manager publish <id>`
 
 ## How to use [Visual Studio Code](https://code.visualstudio.com/) to edit config and dataset
 
