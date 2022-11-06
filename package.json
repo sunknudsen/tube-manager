@@ -34,7 +34,6 @@
     "code": "tsc -w",
     "build": "rm -fr build/*; tsc",
     "prepublishOnly": "npm run build",
-    "purge": "rm -fr tube-manager tube-manager.json",
     "ncu": "ncu --target minor --upgrade"
   },
   "author": "Sun Knudsen <hello@sunknudsen.com>",
