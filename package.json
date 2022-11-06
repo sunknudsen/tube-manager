@@ -1,6 +1,6 @@
 {
   "name": "tube-manager",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Manage YouTube videos using command line.",
   "engines": {
     "node": ">=14.16"

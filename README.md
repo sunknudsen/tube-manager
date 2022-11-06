@@ -41,7 +41,7 @@ Notice how suggested video and affiliate links are automatically expanded?
     }
   ],
   "credits": [],
-  "affiliateLinks": ["amazon.samsungBar"],
+  "affiliateLinks": ["amazon.brotherPrinter"],
   "footnotes": [],
   "support": [
     {
@@ -70,8 +70,8 @@ Superbacked (join waiting list) 👉 https://superbacked.com/
 ==============================
 AFFILIATE LINKS
 ==============================
-Samsung T7 Portable SSD 1TB
-USA 👉 https://www.amazon.com/dp/B087DFLF9S?tag=sunknudsen06-20
+Brother HL-L2370DW printer
+USA 👉 https://www.amazon.com/dp/B076Q1FK19?tag=sunknudsen06-20
 
 ==============================
 SUPPORT

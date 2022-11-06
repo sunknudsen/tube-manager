@@ -11,12 +11,12 @@
   "separator": "👉",
   "affiliateLinks": {
     "amazon": {
-      "samsungBar": {
-        "label": "Samsung T7 Portable SSD 1TB",
+      "brotherPrinter": {
+        "label": "Brother HL-L2370DW printer",
         "url": [
           {
             "label": "USA",
-            "url": "https://www.amazon.com/dp/B087DFLF9S?tag=sunknudsen06-20"
+            "url": "https://www.amazon.com/dp/B076Q1FK19?tag=sunknudsen06-20"
           }
         ]
       }
@@ -47,7 +47,7 @@
         }
       ],
       "credits": [],
-      "affiliateLinks": ["amazon.samsungBar"],
+      "affiliateLinks": ["amazon.brotherPrinter"],
       "footnotes": [],
       "support": [
         {
