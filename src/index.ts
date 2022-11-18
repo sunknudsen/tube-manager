@@ -705,9 +705,9 @@ program
   })
 
 interface PublishOptions {
+  embeddable: boolean
   public: boolean
   publishRelated: boolean
-  youtubeCheck: boolean
 }
 
 const publishVideo = async function (
@@ -726,11 +726,13 @@ const publishVideo = async function (
       tags: video.tags,
       categoryId: video.categoryId,
     },
+    status: {},
+  }
+  if (options.embeddable === true) {
+    json.status.embeddable = true
   }
   if (options.public === true) {
-    json.status = {
-      privacyStatus: "public",
-    }
+    json.status.privacyStatus = true
   }
   let updatedThumbnailHash: string
   const thumbnail = join(thumbnailDir, `${video.id}.jpg`)
@@ -796,6 +798,7 @@ program
     resolve(process.cwd(), "tube-manager")
   )
   .option("--public", "make video(s) public")
+  .option("--no-embeddable", "do not enable embedding")
   .option("--no-publish-related", "do not publish related video(s)")
   .action(async (id, command) => {
     try {
@@ -807,9 +810,10 @@ program
       const thumbnailDir = command.thumbnailDir
       const options: PublishOptions = {
         public: command.public,
+        embeddable: command.embeddable,
         publishRelated: command.publishRelated,
-        youtubeCheck: command.youtubeCheck,
       }
+      console.log(options)
       if (!id) {
         const values = await inquirer.prompt({
           type: "confirm",
