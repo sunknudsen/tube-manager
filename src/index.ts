@@ -732,7 +732,7 @@ const publishVideo = async function (
     json.status.embeddable = true
   }
   if (options.public === true) {
-    json.status.privacyStatus = true
+    json.status.privacyStatus = "public"
   }
   let updatedThumbnailHash: string
   const thumbnail = join(thumbnailDir, `${video.id}.jpg`)
@@ -813,7 +813,6 @@ program
         embeddable: command.embeddable,
         publishRelated: command.publishRelated,
       }
-      console.log(options)
       if (!id) {
         const values = await inquirer.prompt({
           type: "confirm",
