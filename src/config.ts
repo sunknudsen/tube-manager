@@ -1,9 +1,7 @@
-import { promisify } from "util"
-import { readFile, writeFile } from "fs"
+import fsExtra from "fs-extra"
 import prettier from "prettier"
 
-const readFileAsync = promisify(readFile)
-const writeFileAsync = promisify(writeFile)
+const { readFile, writeFile } = fsExtra
 
 interface Props {
   youtube: {
@@ -36,7 +34,7 @@ export default class Config {
     this.profile = profile
   }
   async load() {
-    const json = await readFileAsync(this.path, "utf8")
+    const json = await readFile(this.path, "utf8")
     this.profiles = JSON.parse(json)
     this.props = this.profiles[this.profile]
   }
@@ -51,11 +49,9 @@ export default class Config {
     return this
   }
   async save() {
-    await writeFileAsync(
-      this.path,
-      prettier.format(JSON.stringify(this.profiles, null, 2), {
-        parser: "json",
-      })
-    )
+    const data = await prettier.format(JSON.stringify(this.profiles, null, 2), {
+      parser: "json",
+    })
+    await writeFile(this.path, data)
   }
 }

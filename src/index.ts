@@ -1,20 +1,20 @@
+import chalk from "chalk"
 import { program } from "commander"
+import fsExtra from "fs-extra"
+import { HTTPError } from "got"
+import { hashFile } from "hasha"
+import { homedir } from "os"
 import pWhilst from "p-whilst"
 import { join, resolve } from "path"
-import fsExtra from "fs-extra"
-import inquirer from "inquirer"
-import hasha from "hasha"
-import { inspect } from "util"
-import chalk from "chalk"
 import prettier from "prettier"
-import { homedir } from "os"
-import { HTTPError } from "got"
+import prompts from "prompts"
+import { inspect } from "util"
 import Config from "./config.js"
 import YouTube from "./youtube.js"
 
 const { existsSync, readFile, writeFile, emptyDir, ensureDir } = fsExtra
 
-const logError = function (error: Error | HTTPError) {
+const logError = (error: Error | HTTPError) => {
   if (error instanceof HTTPError) {
     const url = error.response.request.options.url
     console.error(
@@ -157,7 +157,7 @@ program
           },
         })
         let channels: any[] = []
-        channelsResponse.body.items.forEach(function (item: any) {
+        channelsResponse.body.items.forEach((item: any) => {
           channels.push({
             id: item.id,
             title: item.snippet.title,
@@ -274,23 +274,23 @@ program
       await config.load()
       const youtube = new YouTube(config)
       if (existsSync(command.dataset)) {
-        const values = await inquirer.prompt({
-          type: "confirm",
-          name: "confirmation",
+        const { confirmation } = await prompts({
           message: `Do you wish to override ${chalk.bold(command.dataset)}?`,
+          name: "confirmation",
+          type: "confirm",
         })
-        if (values.confirmation !== true) {
+        if (confirmation !== true) {
           console.info(chalk.red("Cancelled"))
           process.exit(0)
         }
       }
       if (existsSync(command.thumbnailDir)) {
-        const values = await inquirer.prompt({
-          type: "confirm",
-          name: "confirmation",
+        const { confirmation } = await prompts({
           message: `Do you wish to purge ${chalk.bold(command.thumbnailDir)}?`,
+          name: "confirmation",
+          type: "confirm",
         })
-        if (values.confirmation !== true) {
+        if (confirmation !== true) {
           console.info(chalk.red("Cancelled"))
           process.exit(0)
         }
@@ -335,12 +335,12 @@ program
               }
             )
             pageToken = playlistItemsResponse.body.nextPageToken
-            playlistItemsResponse.body.items.forEach(function (item: any) {
+            playlistItemsResponse.body.items.forEach((item: any) => {
               items.push(item)
             })
           }
         )
-        items.forEach(function (item) {
+        items.forEach((item) => {
           if (command.exclude) {
             const excluded = command.exclude.replace(/ /g, "").split(",")
             if (excluded.indexOf(item.snippet.resourceId.videoId) === -1) {
@@ -399,10 +399,10 @@ program
         }
         dataset.videos.push(video)
       }
-      await writeFile(
-        command.dataset,
-        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
-      )
+      const data = await prettier.format(JSON.stringify(dataset, null, 2), {
+        parser: "json",
+      })
+      await writeFile(command.dataset, data)
       console.info(
         chalk.green(
           `Imported ${chalk.bold(dataset.videos.length)} videos to ${chalk.bold(
@@ -465,7 +465,7 @@ program
         footnotes: [],
         support: [],
       })
-      dataset.videos.sort(function (a, b) {
+      dataset.videos.sort((a, b) => {
         const dateA = new Date(a.publishedAt)
         const dateB = new Date(b.publishedAt)
         if (dateA > dateB) {
@@ -476,10 +476,10 @@ program
         }
         return 0
       })
-      await writeFile(
-        command.dataset,
-        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
-      )
+      const data = await prettier.format(JSON.stringify(dataset, null, 2), {
+        parser: "json",
+      })
+      await writeFile(command.dataset, data)
       console.info(
         chalk.green(`Imported video to ${chalk.bold(command.dataset)}`)
       )
@@ -488,7 +488,7 @@ program
     }
   })
 
-const getYouTubeVideo = function (dataset: Dataset, id: string): Video {
+const getYouTubeVideo = (dataset: Dataset, id: string): Video => {
   for (const video of dataset.videos) {
     if (video.id === id) {
       return video
@@ -496,38 +496,38 @@ const getYouTubeVideo = function (dataset: Dataset, id: string): Video {
   }
 }
 
-const heading = function (value: string) {
+const heading = (value: string) => {
   return `\n\n==============================\n${value.toUpperCase()}\n==============================`
 }
 
-const support = function (dataset: Dataset, video: Video) {
+const support = (dataset: Dataset, video: Video) => {
   let content = ""
-  video.support.forEach(function (means) {
-    if (typeof means === "string") {
-      content += `\n${means}`
+  video.support.forEach((option) => {
+    if (typeof option === "string") {
+      content += `\n${option}`
     } else {
-      content += `\n${means.label} ${dataset.separator} ${means.url}`
+      content += `\n${option.label} ${dataset.separator} ${option.url}`
     }
   })
   return content
 }
 
-const description = function (
+const description = (
   config: Config,
   dataset: Dataset,
   platform: string,
   video: Video
-) {
+) => {
   let content = video.description
   if (video.sections.length > 0) {
     content += heading(dataset.headings.sections)
-    video.sections.forEach(function (section) {
+    video.sections.forEach((section) => {
       content += `\n${section.timestamp} ${section.label}`
     })
   }
   if (video.suggestedVideos.length > 0) {
     content += heading(dataset.headings.suggestedVideos)
-    video.suggestedVideos.forEach(function (suggestedVideo) {
+    video.suggestedVideos.forEach((suggestedVideo) => {
       if (
         typeof suggestedVideo === "string" &&
         suggestedVideo.match(/^video\.[a-zA-Z0-9_\-]{11}/)
@@ -552,7 +552,7 @@ const description = function (
   }
   if (video.links.length > 0) {
     content += heading(dataset.headings.links)
-    video.links.forEach(function (link) {
+    video.links.forEach((link) => {
       if (typeof link === "string") {
         content += `\n${link}`
       } else {
@@ -562,7 +562,7 @@ const description = function (
   }
   if (video.credits.length > 0) {
     content += heading(dataset.headings.credits)
-    video.credits.forEach(function (credit) {
+    video.credits.forEach((credit) => {
       if (typeof credit === "string") {
         content += `\n${credit}`
       } else {
@@ -573,7 +573,7 @@ const description = function (
   if (video.affiliateLinks.length > 0) {
     content += heading(dataset.headings.affiliateLinks)
     let count = 0
-    video.affiliateLinks.forEach(function (affiliateLink) {
+    video.affiliateLinks.forEach((affiliateLink) => {
       if (
         typeof affiliateLink === "string" &&
         affiliateLink.match(/^(\w+?)\.(\w+?)$/)
@@ -591,11 +591,11 @@ const description = function (
             content += "\n"
           }
           content += `\n${affiliateLinkAttributes.label}`
-          affiliateLinkAttributes.url.forEach(function (_url) {
-            if (typeof _url === "string") {
-              content += `\n${_url}`
+          affiliateLinkAttributes.url.forEach((url) => {
+            if (typeof url === "string") {
+              content += `\n${url}`
             } else {
-              content += `\n${_url.label} ${dataset.separator} ${_url.url}`
+              content += `\n${url.label} ${dataset.separator} ${url.url}`
             }
           })
         } else {
@@ -608,7 +608,7 @@ const description = function (
           content += "\n"
         }
         content += `\n${affiliateLink.label}`
-        affiliateLink.url.forEach(function (_url) {
+        affiliateLink.url.forEach((_url) => {
           if (typeof _url === "string") {
             content += `\n${_url}`
           } else {
@@ -623,7 +623,7 @@ const description = function (
   }
   if (video.footnotes.length > 0) {
     content += heading(dataset.headings.footnotes)
-    video.footnotes.forEach(function (footnote) {
+    video.footnotes.forEach((footnote) => {
       if (typeof footnote === "string") {
         content += `\n${footnote}`
       } else {
@@ -646,13 +646,13 @@ const description = function (
   return content
 }
 
-const preview = function (
+const preview = (
   config: Config,
   dataset: Dataset,
   platform: string,
   video: Video,
   metadata: boolean
-) {
+) => {
   let content = `${chalk.bold(video.title)}`
   content += `\n\n${description(config, dataset, platform, video)}`
   if (metadata) {
@@ -710,14 +710,14 @@ interface PublishOptions {
   publishRelated: boolean
 }
 
-const publishVideo = async function (
+const publishVideo = async (
   config: Config,
   youtube: YouTube,
   dataset: Dataset,
   thumbnailDir: string,
   video: Video,
   options: PublishOptions
-) {
+) => {
   let json: any = {
     id: video.id,
     snippet: {
@@ -737,7 +737,7 @@ const publishVideo = async function (
   let updatedThumbnailHash: string
   const thumbnail = join(thumbnailDir, `${video.id}.jpg`)
   if (existsSync(thumbnail)) {
-    const thumbnailHash = await hasha.fromFile(thumbnail, {
+    const thumbnailHash = await hashFile(thumbnail, {
       algorithm: "sha256",
     })
     if (!video.thumbnailHash || video.thumbnailHash !== thumbnailHash) {
@@ -745,7 +745,7 @@ const publishVideo = async function (
     }
   }
   // See https://developers.google.com/youtube/v3/docs/videos/update
-  const videosResponse: any = await youtube.got.put("videos", {
+  await youtube.got.put("videos", {
     searchParams: {
       part: "snippet,status",
     },
@@ -754,7 +754,7 @@ const publishVideo = async function (
   // Upload thumbnail to YouTube (if present or has changed)
   if (updatedThumbnailHash) {
     // See https://developers.google.com/youtube/v3/docs/thumbnails/set
-    const thumbnailsResponse: any = await youtube.got.post("thumbnails/set", {
+    await youtube.got.post("thumbnails/set", {
       prefixUrl: config.props.youtube.apiPrefixUrl.replace(
         "youtube",
         "upload/youtube"
@@ -814,12 +814,12 @@ program
         publishRelated: command.publishRelated,
       }
       if (!id) {
-        const values = await inquirer.prompt({
-          type: "confirm",
+        const { confirmation } = await prompts({
+          message: "Are you sure you wish to publish all videos?",
           name: "confirmation",
-          message: `Are you sure you wish to publish all videos?`,
+          type: "confirm",
         })
-        if (values.confirmation !== true) {
+        if (confirmation !== true) {
           process.exit(0)
         }
         console.info("Publishing all videos...")
@@ -849,8 +849,8 @@ program
         if (options.publishRelated === true) {
           // Find suggested videos that reference video
           let relatedVideoIds: string[] = []
-          dataset.videos.forEach(function (video) {
-            video.suggestedVideos.forEach(function (suggestedVideo) {
+          dataset.videos.forEach((video) => {
+            video.suggestedVideos.forEach((suggestedVideo) => {
               if (
                 typeof suggestedVideo === "string" &&
                 suggestedVideo.match(id)
@@ -878,10 +878,10 @@ program
           }
         }
       }
-      await writeFile(
-        command.dataset,
-        prettier.format(JSON.stringify(dataset, null, 2), { parser: "json" })
-      )
+      const data = await prettier.format(JSON.stringify(dataset, null, 2), {
+        parser: "json",
+      })
+      await writeFile(command.dataset, data)
       console.info("Done")
     } catch (error) {
       logError(error)

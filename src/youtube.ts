@@ -1,7 +1,7 @@
-import open from "open"
-import inquirer from "inquirer"
-import queryString from "query-string"
 import got, { Got } from "got"
+import open from "open"
+import prompts from "prompts"
+import queryString from "query-string"
 import Config from "./config.js"
 
 export default class YouTube {
@@ -51,17 +51,19 @@ export default class YouTube {
       open(
         `${this.config.props.youtube.oauth2PrefixUrl}/auth?client_id=${this.config.props.youtube.clientId}&redirect_uri=http://localhost:8080&response_type=code&scope=https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/yt-analytics.readonly https://www.googleapis.com/auth/yt-analytics-monetary.readonly&access_type=offline`
       )
-      const values = await inquirer.prompt({
-        name: "redirectUri",
+      const { redirectUri } = await prompts({
         message: "Please paste redirect URI here and press enter",
-        validate: function (value) {
-          if (value.match(/http:\/\/localhost:8080\/\?code=/)) {
-            return true
+        name: "redirectUri",
+        type: "text",
+        validate: (value) => {
+          console.log(value)
+          if (/http:\/\/localhost:8080\/\?code=/.test(value) === false) {
+            return "Please enter a valid redirect URI"
           }
-          return "Please enter a valid redirect URI"
+          return true
         },
       })
-      const parsed = queryString.parseUrl(values.redirectUri)
+      const parsed = queryString.parseUrl(redirectUri)
       // See https://developers.google.com/identity/protocols/oauth2/web-server
       const response: any = await this.got.post(`token`, {
         prefixUrl: this.config.props.youtube.oauth2PrefixUrl,
@@ -86,7 +88,7 @@ export default class YouTube {
     try {
       let refreshToken = this.config.props.youtube.refreshToken
       if (refreshToken === "") {
-        const values = await inquirer.prompt({
+        const values = await prompts({
           type: "password",
           name: "refreshToken",
           message: "Please paste YouTube refresh token here and press enter",

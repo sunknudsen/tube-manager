@@ -12,11 +12,11 @@
   "affiliateLinks": {
     "amazon": {
       "brotherPrinter": {
-        "label": "Brother HL-L2370DW printer",
+        "label": "Brother HL-L2460DW printer",
         "url": [
           {
             "label": "USA",
-            "url": "https://www.amazon.com/dp/B076Q1FK19?tag=sunknudsen06-20"
+            "url": "https://www.amazon.com/dp/B0CPL2N5H6?tag=sunknudsen06-20"
           }
         ]
       }
@@ -35,7 +35,7 @@
       "links": [
         {
           "label": "How to disable CUPS pinter job history on macOS",
-          "url": "https://sunknudsen.com/privacy-guides/how-to-disable-cups-pinter-job-history-on-macos"
+          "url": "https://sunknudsen.com/guides/how-to-disable-cups-printer-job-history-on-macos"
         },
         {
           "label": "Twitter (please follow @superbacked)",
@@ -51,7 +51,7 @@
       "footnotes": [],
       "support": [
         {
-          "label": "Support my research",
+          "label": "Support my work",
           "url": "https://sunknudsen.com/donate"
         }
       ],

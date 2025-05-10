@@ -29,7 +29,7 @@ Notice how suggested video and affiliate links are automatically expanded?
   "links": [
     {
       "label": "How to disable CUPS pinter job history on macOS",
-      "url": "https://sunknudsen.com/privacy-guides/how-to-disable-cups-pinter-job-history-on-macos"
+      "url": "https://sunknudsen.com/guides/how-to-disable-cups-printer-job-history-on-macos"
     },
     {
       "label": "Twitter (please follow @superbacked)",
@@ -45,7 +45,7 @@ Notice how suggested video and affiliate links are automatically expanded?
   "footnotes": [],
   "support": [
     {
-      "label": "Support my research",
+      "label": "Support my work",
       "url": "https://sunknudsen.com/donate"
     }
   ],
@@ -63,20 +63,20 @@ In this episode, we explore how macOS stores a copy of everything one prints for
 ==============================
 LINKS
 ==============================
-How to disable CUPS pinter job history on macOS 👉 https://sunknudsen.com/privacy-guides/how-to-disable-cups-pinter-job-history-on-macos
+How to disable CUPS pinter job history on macOS 👉 https://sunknudsen.com/guides/how-to-disable-cups-printer-job-history-on-macos
 Twitter (please follow @superbacked) 👉 https://twitter.com/superbacked
 Superbacked (join waiting list) 👉 https://superbacked.com/
 
 ==============================
 AFFILIATE LINKS
 ==============================
-Brother HL-L2370DW printer
-USA 👉 https://www.amazon.com/dp/B076Q1FK19?tag=sunknudsen06-20
+Brother HL-L2460DW printer
+USA 👉 https://www.amazon.com/dp/B0CPL2N5H6?tag=sunknudsen06-20
 
 ==============================
 SUPPORT
 ==============================
-Support my research 👉 https://sunknudsen.com/donate
+Support my work 👉 https://sunknudsen.com/donate
 ```
 
 ## Installation
@@ -155,13 +155,13 @@ Editing config and dataset using Visual Studio Code makes things much more effic
 
 ### Step 2: enable `code` command
 
-Click “View”, then “Command Palette...”, type “install code”, select “Install 'code' command in PATH” and press enter.
+Click “View”, then “Command Palette…”, type “install code”, select “Install 'code' command in PATH” and press enter.
 
 ### Step 3: download and install Prettier extension
 
 ### Step 4: add JSON schemas to user settings
 
-Click “View”, then “Command Palette...”, type “settings json”, select and press enter.
+Click “View”, then “Command Palette…”, type “settings json”, select and press enter.
 
 ```json
 "json.schemas": [
