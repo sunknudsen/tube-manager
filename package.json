@@ -3,7 +3,7 @@
   "version": "0.6.3",
   "description": "Manage YouTube videos using command line.",
   "engines": {
-    "node": ">=14.16"
+    "node": ">=18"
   },
   "bin": {
     "tube-manager": "./bin/tube-manager.js"
